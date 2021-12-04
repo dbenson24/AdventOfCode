@@ -16,3 +16,14 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
+#[test]
+pub fn base() {
+    if let Ok(lines) = read_lines("./src/year2021/data/day1testinput.txt") {
+        // Consumes the iterator, returns an (Optional) String
+        for (line_num, line) in lines.enumerate() {
+            if let Ok(contents) = line {
+
+            }
+        } 
+    }
+}

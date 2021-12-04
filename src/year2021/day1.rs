@@ -2,7 +2,7 @@
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
-use crate::year2021::utils::read_lines;
+use crate::utils::read_lines;
 
 #[derive(Default, Debug, Clone, Copy)]
 struct avg_sum {
