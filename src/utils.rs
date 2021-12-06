@@ -16,6 +16,28 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
+#[derive(Clone)]
+pub struct World<T: Default> {
+    data: Vec<Vec<T>>
+}
+
+impl<T: Default + Clone> World<T> {
+    pub fn new() -> Self {
+        World {
+            data: vec![vec![T::default(); 50000]; 50000]
+        }
+    }
+
+    pub fn get(&self, pos: Vec2) -> &T {
+        &self.data[(pos.x + 25000) as usize][(pos.y + 25000) as usize]
+    }
+
+    pub fn set(&mut self, pos: Vec2, val: T) {
+        self.data[(pos.x + 25000) as usize][(pos.y + 25000) as usize] = val;
+    }
+}
+
+
 #[test]
 pub fn base() {
     if let Ok(lines) = read_lines("./src/year2021/data/day1testinput.txt") {
@@ -27,3 +49,4 @@ pub fn base() {
         } 
     }
 }
+

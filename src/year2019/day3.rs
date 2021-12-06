@@ -1,27 +1,7 @@
-use crate::utils::*;
 
 use std::str::FromStr;
+use crate::utils::*;
 
-#[derive(Clone)]
-struct World<T: Default> {
-    data: Vec<Vec<T>>
-}
-
-impl<T: Default + Clone> World<T> {
-    pub fn new() -> Self {
-        World {
-            data: vec![vec![T::default(); 50000]; 50000]
-        }
-    }
-
-    pub fn get(&self, pos: Vec2) -> &T {
-        &self.data[(pos.x + 25000) as usize][(pos.y + 25000) as usize]
-    }
-
-    pub fn set(&mut self, pos: Vec2, val: T) {
-        self.data[(pos.x + 25000) as usize][(pos.y + 25000) as usize] = val;
-    }
-}
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
