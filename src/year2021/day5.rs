@@ -1,8 +1,6 @@
-
 use std::collections::{BTreeSet, HashSet};
 
 use crate::utils::*;
-
 
 #[test]
 pub fn count_intersections() {
@@ -13,16 +11,19 @@ pub fn count_intersections() {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
-                let points: Vec<_> = contents.split(" -> ").map(|s| {
-                    let nums:  Vec<i32> = s.split(",").map(|x| x.parse().unwrap()).collect();
-                    Vec2::new(nums[0], nums[1])
-                }).collect();
+                let points: Vec<_> = contents
+                    .split(" -> ")
+                    .map(|s| {
+                        let nums: Vec<i32> = s.split(",").map(|x| x.parse().unwrap()).collect();
+                        Vec2::new(nums[0], nums[1])
+                    })
+                    .collect();
                 let a = points[0];
                 let b = points[1];
                 let mut flat = false;
                 if a.x != b.x && a.y != b.y {
                     if (a.x - b.x).abs() != (a.y - b.y).abs() {
-                        continue
+                        continue;
                     }
                 } else {
                     flat = true;

@@ -1,8 +1,7 @@
-
+use glam::IVec2;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
-use glam::IVec2;
 
 pub type Vec2 = IVec2;
 
@@ -18,13 +17,13 @@ where
 
 #[derive(Clone)]
 pub struct World<T: Default> {
-    data: Vec<Vec<T>>
+    data: Vec<Vec<T>>,
 }
 
 impl<T: Default + Clone> World<T> {
     pub fn new() -> Self {
         World {
-            data: vec![vec![T::default(); 50000]; 50000]
+            data: vec![vec![T::default(); 50000]; 50000],
         }
     }
 
@@ -37,16 +36,12 @@ impl<T: Default + Clone> World<T> {
     }
 }
 
-
 #[test]
 pub fn base() {
     if let Ok(lines) = read_lines("./src/year2021/data/day1testinput.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
-            if let Ok(contents) = line {
-
-            }
-        } 
+            if let Ok(contents) = line {}
+        }
     }
 }
-

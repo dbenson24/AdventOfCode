@@ -1,15 +1,14 @@
 use crate::utils::*;
-use std::str::FromStr;
 use std::convert::From;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum Direction {
     UP,
     DOWN,
     FORWARD,
-    BACKWARD
+    BACKWARD,
 }
-
 
 impl From<Direction> for Vec2 {
     fn from(dir: Direction) -> Vec2 {
@@ -25,7 +24,7 @@ impl From<Direction> for Vec2 {
 #[derive(Debug, Clone, Copy)]
 struct Movement {
     dir: Direction,
-    dist: i32
+    dist: i32,
 }
 impl FromStr for Movement {
     type Err = ParseMovementError;
@@ -40,13 +39,11 @@ impl FromStr for Movement {
             } else if count == 1 {
                 dist = word.parse().unwrap();
             } else {
-                return Err(ParseMovementError)
+                return Err(ParseMovementError);
             }
             count += 1;
         }
-        Ok(Movement {
-            dir, dist
-        })
+        Ok(Movement { dir, dist })
     }
 }
 
@@ -54,7 +51,7 @@ impl Movement {
     pub fn get_move(&self) -> Vec2 {
         let dir: Vec2 = self.dir.into();
         dir * self.dist
-    }    
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -72,7 +69,7 @@ impl FromStr for Direction {
             "backward" => Ok(Direction::BACKWARD),
             "up" => Ok(Direction::UP),
             "down" => Ok(Direction::DOWN),
-            _ => Err(ParseDirectionError)
+            _ => Err(ParseDirectionError),
         }
     }
 }
@@ -100,4 +97,3 @@ fn track_movement() {
         dbg!(pos.x * pos.y);
     }
 }
-

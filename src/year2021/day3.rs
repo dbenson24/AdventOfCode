@@ -1,7 +1,6 @@
 use crate::utils::*;
-use std::str::FromStr;
 use std::convert::From;
-
+use std::str::FromStr;
 
 #[test]
 fn calculate_gamma_epsilon() {
@@ -26,9 +25,8 @@ fn calculate_gamma_epsilon() {
 
                 line_count += 1;
             }
-
         }
-        
+
         let mut gamma = 0;
         let mut epsilon = 0;
         let half = line_count / 2;
@@ -79,9 +77,6 @@ impl get_bit for i32 {
     }
 }
 
-
-
-
 #[test]
 fn calculate_oxy_and_co2() {
     // File hosts must exist in current path before this produces output
@@ -113,27 +108,32 @@ fn calculate_oxy_and_co2() {
         let mut oxy_values = numbers.clone();
         for i in 0..totals.len() {
             let filtered_totals = calculate_most_common_bit(&oxy_values, bit_count);
-            oxy_values = oxy_values.into_iter().filter(|&val| {
-                let bit = val.get_bit(i, 32 - bit_count);
-                bit == filtered_totals[i]
-            }).collect();
-            
+            oxy_values = oxy_values
+                .into_iter()
+                .filter(|&val| {
+                    let bit = val.get_bit(i, 32 - bit_count);
+                    bit == filtered_totals[i]
+                })
+                .collect();
+
             if oxy_values.len() == 1 {
                 break;
             }
         }
 
-        
         // calc oxy rating
         let mut co2_values = numbers.clone();
         for i in 0..totals.len() {
             let mut filtered_totals = calculate_most_common_bit(&co2_values, bit_count);
             filtered_totals.iter_mut().for_each(|x| *x = (*x - 1).abs());
             dbg!(&co2_values, &filtered_totals);
-            co2_values = co2_values.into_iter().filter(|&val| {
-                let bit = val.get_bit(i, 32 - bit_count);
-                bit == filtered_totals[i]
-            }).collect();
+            co2_values = co2_values
+                .into_iter()
+                .filter(|&val| {
+                    let bit = val.get_bit(i, 32 - bit_count);
+                    bit == filtered_totals[i]
+                })
+                .collect();
             if co2_values.len() == 1 {
                 break;
             }
@@ -149,7 +149,7 @@ fn calculate_oxy_and_co2() {
             }
         }
         dbg!(gamma, epsilon, gamma * epsilon);
-        
+
         dbg!(&oxy_values);
         dbg!(&co2_values);
         dbg!(oxy_values[0] * co2_values[0]);

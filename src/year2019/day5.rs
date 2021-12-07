@@ -1,6 +1,5 @@
-
 use crate::utils::*;
-use num_derive::FromPrimitive;    
+use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 
 #[derive(FromPrimitive)]
@@ -13,7 +12,7 @@ enum Codes {
     JUMPZERO = 6,
     LESSTHAN = 7,
     EQUALS = 8,
-    END = 99
+    END = 99,
 }
 
 pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
@@ -40,7 +39,7 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
                 //dbg!(a,b,a+b, dest);
                 numbers[dest as usize] = get_val(a, mode1) + get_val(b, mode2);
                 pos += 4;
-            },
+            }
             Some(Codes::MUL) => {
                 let a = numbers[pos + 1];
                 let b = numbers[pos + 2];
@@ -48,17 +47,17 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
                 //dbg!(a,b,a*b, dest);
                 numbers[dest as usize] = get_val(a, mode1) * get_val(b, mode2);
                 pos += 4;
-            },
+            }
             Some(Codes::INPUT) => {
                 let dest = numbers[pos + 1];
                 numbers[dest as usize] = input;
                 pos += 2;
-            },
+            }
             Some(Codes::OUTPUT) => {
                 let src = numbers[pos + 1];
                 output = get_val(src, mode1);
                 pos += 2;
-            },
+            }
             Some(Codes::JUMPNONZERO) => {
                 let a = numbers[pos + 1];
                 let b = numbers[pos + 2];
@@ -67,7 +66,7 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
                 } else {
                     pos += 3;
                 }
-            },
+            }
             Some(Codes::JUMPZERO) => {
                 let a = numbers[pos + 1];
                 let b = numbers[pos + 2];
@@ -76,7 +75,7 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
                 } else {
                     pos += 3;
                 }
-            },
+            }
             Some(Codes::LESSTHAN) => {
                 let a = numbers[pos + 1];
                 let b = numbers[pos + 2];
@@ -87,7 +86,7 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
                     numbers[c as usize] = 0
                 }
                 pos += 4;
-            },
+            }
             Some(Codes::EQUALS) => {
                 let a = numbers[pos + 1];
                 let b = numbers[pos + 2];
@@ -102,7 +101,7 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
             Some(Codes::END) => {
                 dbg!(&numbers, output);
                 return output;
-            },
+            }
             _ => {
                 panic!("hit bad opcode {} at {}", op, pos);
             }
@@ -110,15 +109,17 @@ pub fn eval_int_code(numbers: &mut Vec<i32>, input: i32) -> i32 {
     }
 }
 
-
-
 #[test]
 pub fn run_opcodes() {
     if let Ok(lines) = read_lines("./src/year2019/data/day5input.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
-            let mut numbers: Vec<i32> = line.unwrap().split(",").map(|s| s.parse().unwrap()).collect();
+            let mut numbers: Vec<i32> = line
+                .unwrap()
+                .split(",")
+                .map(|s| s.parse().unwrap())
+                .collect();
             let res = eval_int_code(&mut numbers, 5);
-        } 
+        }
     }
 }

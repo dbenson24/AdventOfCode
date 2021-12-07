@@ -1,6 +1,5 @@
 use crate::utils::*;
 
-
 pub fn eval_int_code(numbers: &mut Vec<usize>) -> usize {
     let mut pos = 0;
     loop {
@@ -13,8 +12,8 @@ pub fn eval_int_code(numbers: &mut Vec<usize>) -> usize {
                 //dbg!(a,b,a+b, dest);
                 numbers[dest] = numbers[a] + numbers[b];
                 pos += 4;
-            },
-            2=> {
+            }
+            2 => {
                 let a = numbers[pos + 1];
                 let b = numbers[pos + 2];
                 let dest = numbers[pos + 3];
@@ -32,13 +31,16 @@ pub fn eval_int_code(numbers: &mut Vec<usize>) -> usize {
     }
 }
 
-
 #[test]
 pub fn run_opcodes() {
     if let Ok(lines) = read_lines("./src/year2019/data/day2input.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
-            let mut numbers: Vec<usize> = line.unwrap().split(",").map(|s| s.parse().unwrap()).collect();
+            let mut numbers: Vec<usize> = line
+                .unwrap()
+                .split(",")
+                .map(|s| s.parse().unwrap())
+                .collect();
             for a in 0..100 {
                 for b in 0..100 {
                     let mut modified_numbers = numbers.clone();
@@ -50,7 +52,6 @@ pub fn run_opcodes() {
                     }
                 }
             }
-        } 
+        }
     }
 }
-

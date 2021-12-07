@@ -1,8 +1,7 @@
-
+use crate::utils::read_lines;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
-use crate::utils::read_lines;
 
 #[derive(Default, Debug, Clone, Copy)]
 struct avg_sum {
@@ -24,7 +23,7 @@ impl avg_sum {
 
     pub fn remove_first(&mut self) {
         if self.len == 0 {
-            return
+            return;
         }
         if self.len == 1 {
             self.len = 0;
@@ -44,7 +43,6 @@ impl avg_sum {
         return sum;
     }
 }
-
 
 #[test]
 fn count_depths() {

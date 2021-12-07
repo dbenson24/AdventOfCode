@@ -1,14 +1,12 @@
-
-
 mod year2021;
 
-mod year2019;
 mod utils;
+mod year2019;
 
 fn main() {
     println!("Hello, world!");
-    let days= 180;
-    year2021::day6::calc_fish_buckets(256);
-    year2021::day6::calc_fish_recurse(256);
-    //year2021::day6::calc_fish_iter(200);
+    let days = 256;
+    year2021::day6::calc_fish_buckets(days);
+    //year2021::day6::calc_fish_recurse(days);
+    //year2021::day6::calc_fish_iter(days);
 }

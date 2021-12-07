@@ -1,17 +1,13 @@
-
-use std::str::FromStr;
 use crate::utils::*;
-
-
+use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum Direction {
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
 }
-
 
 impl From<Direction> for Vec2 {
     fn from(dir: Direction) -> Vec2 {
@@ -36,11 +32,10 @@ impl FromStr for Direction {
             "L" => Ok(Direction::LEFT),
             "U" => Ok(Direction::UP),
             "D" => Ok(Direction::DOWN),
-            _ => Err(ParseDirectionError)
+            _ => Err(ParseDirectionError),
         }
     }
 }
-
 
 pub fn parse_command(command: &str) -> (i32, Vec2) {
     let op = &command[0..1];
@@ -87,7 +82,7 @@ pub fn find_closest_intersect() {
                 }
             }
             dbg!(min_dist);
-        } 
+        }
     }
 }
 
@@ -125,7 +120,11 @@ pub fn find_min_sig_delay_intersect() {
                             let movement: Vec2 = dir * i;
                             if *world.get(pos + movement) > 0 {
                                 let other_delay = *world.get(pos + movement);
-                                println!("Collision at {}, dist={}", pos + movement, delay + other_delay + i);
+                                println!(
+                                    "Collision at {}, dist={}",
+                                    pos + movement,
+                                    delay + other_delay + i
+                                );
                                 min_delay = min_delay.min(delay + other_delay + i);
                             }
                         }
@@ -135,6 +134,6 @@ pub fn find_min_sig_delay_intersect() {
                 }
             }
             dbg!(min_delay);
-        } 
+        }
     }
 }
