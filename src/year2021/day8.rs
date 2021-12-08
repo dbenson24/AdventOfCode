@@ -40,33 +40,36 @@ impl FromStr for SIG {
     }
 }
 
+type Segments = [bool; 7];
+
 static mappings: [&str; 10] = [
     "abcefg", "cf", "acdeg", "acdfg", "bcdf", "abdfg", "abdefg", "acf", "abcdefg", "abcdfg",
 ];
 
 #[derive(Debug, Clone, Default)]
-pub struct Mapping {
-    pub dat: [[bool; 7]; 10],
+pub struct DigitSet {
+    pub dat: [Segments; 10],
 }
 
-pub fn str_to_sigs(str: &str, sigs: &mut [bool; 7]) {
+// converts a string of segments to a bit field of the digit
+pub fn str_to_sigs(str: &str, segments: &mut Segments) {
     str.split("").filter(|s| s.len() > 0).for_each(|s| {
         let sig: SIG = s.parse().unwrap();
-        sigs[sig as usize] = true
+        segments[sig as usize] = true
     })
 }
 
-impl Mapping {
+impl DigitSet {
     pub fn new(signals: &[&str]) -> Self {
-        let mut dat: [[bool; 7]; 10] = Default::default();
+        let mut dat: [Segments; 10] = Default::default();
         signals.iter().enumerate().for_each(|(i, sigs)| {
             str_to_sigs(sigs, &mut dat[i]);
         });
-        Mapping { dat }
+        DigitSet { dat }
     }
 
-    pub fn convert(&self, order: &[usize]) -> Mapping {
-        let mut dat: [[bool; 7]; 10] = Default::default();
+    pub fn convert(&self, order: &[usize]) -> DigitSet {
+        let mut dat: [Segments; 10] = Default::default();
 
         for (i, sig) in self.dat.iter().enumerate() {
             for (j, &x) in sig.iter().enumerate() {
@@ -74,16 +77,16 @@ impl Mapping {
             }
         }
 
-        Mapping { dat }
+        DigitSet { dat }
     }
 
-    pub fn same(&self, other: &Mapping) -> bool {
+    pub fn same(&self, other: &DigitSet) -> bool {
         self.dat.iter().all(|sigs| other.dat.contains(sigs))
     }
 
-    pub fn order_map(&self, other: &Mapping, mapping: &[usize]) -> Mapping {
+    pub fn order_map(&self, other: &DigitSet, mapping: &[usize]) -> DigitSet {
         let adjusted = self.convert(mapping);
-        let mut ordered_map: Mapping = Mapping::default();
+        let mut ordered_map: DigitSet = DigitSet::default();
         for (i, &sigs) in adjusted.dat.iter().enumerate() {
             ordered_map.dat[other.dat.iter().position(|&x| x == sigs).unwrap()] = self.dat[i]
         }
@@ -92,9 +95,9 @@ impl Mapping {
     }
 }
 
-pub fn map_signals<'a>(signals: &Vec<&'a str>) -> Mapping {
-    let correct = Mapping::new(&mappings);
-    let new = Mapping::new(&signals);
+pub fn map_signals(signals: &Vec<&str>) -> DigitSet {
+    let correct = DigitSet::new(&mappings);
+    let new = DigitSet::new(&signals);
 
     let mapping = (0..7 as usize)
         .permutations(7)
@@ -116,14 +119,14 @@ pub fn day_8() {
         let mut sum = 0;
         for (line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
-                let x: Vec<_> = contents.split(" | ").collect();
-                let signals: Vec<_> = x[0].split(" ").collect();
+                let input: Vec<_> = contents.split(" | ").collect();
+                let signals: Vec<_> = input[0].split(" ").collect();
                 let map = map_signals(&signals);
 
-                let output: usize = x[1]
+                let output: usize = input[1]
                     .split(" ")
                     .map(|s| {
-                        let mut sigs: [bool; 7] = Default::default();
+                        let mut sigs: Segments = Default::default();
                         str_to_sigs(s, &mut sigs);
                         let pos = map.dat.iter().position(|&sig| sig == sigs).unwrap();
                         counts[pos] += 1;
