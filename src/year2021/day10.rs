@@ -71,9 +71,6 @@ pub fn day_10_part_1() {
         }
         completion_scores.sort();
         dbg!(score);
-        dbg!(
-            &completion_scores,
-            completion_scores[completion_scores.len() / 2]
-        );
+        dbg!(completion_scores[completion_scores.len() / 2]);
     }
 }
