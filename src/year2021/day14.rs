@@ -137,6 +137,7 @@ pub fn day_14_part_2() {
                 acc
             })
         });
+        dbg!(memoized.len());
 
         dbg!(counts.values().max().unwrap() - counts.values().min().unwrap());
     }

@@ -35,7 +35,7 @@ pub fn pretty_print(paper: &HashSet<Vec2>) {
 
 #[test]
 pub fn day_13() {
-    if let Ok(lines) = read_lines("./src/year2021/data/day13test2input.txt") {
+    if let Ok(lines) = read_lines("./src/year2021/data/day13input.txt") {
         // Consumes the iterator, returns an (Optional) String
 
         let mut paper = HashSet::new();
