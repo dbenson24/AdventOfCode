@@ -1,10 +1,10 @@
 use super::intcode::IntcodeMachine;
 use crate::utils::*;
 use std::sync::mpsc;
-
+use std::time::Duration;
 #[test]
-pub fn run_opcodes() {
-    if let Ok(lines) = read_lines("./src/year2019/data/day5input.txt") {
+pub fn day_9() {
+    if let Ok(lines) = read_lines("./src/year2019/data/day9input.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
             let mut numbers: Vec<i64> = line
@@ -15,9 +15,11 @@ pub fn run_opcodes() {
 
             let mut machine = IntcodeMachine::new(numbers);
             let (tx, rx) = mpsc::channel();
-            tx.send(5).unwrap();
+            tx.send(2).unwrap();
             machine.run(&rx, &tx);
-            dbg!(rx.recv().unwrap());
+            while let Ok(x) = rx.recv_timeout(Duration::new(0, 100000)) {
+                dbg!(x);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ use crate::utils::*;
 
 use super::intcode::IntcodeMachine;
 
-fn run_circuit(machine: &IntcodeMachine, inputs: &[i32]) -> i32 {
+fn run_circuit(machine: &IntcodeMachine, inputs: &[i64]) -> i64 {
     let mut signal = 0;
     let (tx_0, mut rx_prev) = mpsc::channel();
     let (tx_n, rx_n) = mpsc::channel();
@@ -46,7 +46,7 @@ pub fn day_7_part_1() {
     if let Ok(lines) = read_lines("./src/year2019/data/day7input.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
-            let mut numbers: Vec<i32> = line
+            let mut numbers: Vec<i64> = line
                 .unwrap()
                 .split(",")
                 .map(|s| s.parse().unwrap())
@@ -68,7 +68,7 @@ pub fn day_7_part_2() {
     if let Ok(lines) = read_lines("./src/year2019/data/day7input.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
-            let mut numbers: Vec<i32> = line
+            let mut numbers: Vec<i64> = line
                 .unwrap()
                 .split(",")
                 .map(|s| s.parse().unwrap())

@@ -23,9 +23,9 @@ pub fn base() {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
-                const width: usize = 25;
-                const height: usize = 6;
-                let layers = decode_layers(&contents, width, height);
+                const WIDTH: usize = 25;
+                const HEIGHT: usize = 6;
+                let layers = decode_layers(&contents, WIDTH, HEIGHT);
                 let digit_counts: Vec<_> = layers
                     .iter()
                     .map(|layer| {
@@ -38,14 +38,13 @@ pub fn base() {
                 let min = digit_counts.iter().min_by(|x, y| x[0].cmp(&y[0])).unwrap();
                 dbg!(min[1] * min[2]);
 
-                let mut acc = [[2; width]; height];
+                let mut pixels = [[2; WIDTH]; HEIGHT];
                 dbg!(layers.len());
 
-                acc = layers.iter().fold(acc, |mut pic, layer| {
-                    for (y, row) in layer.iter().chunks(width).into_iter().enumerate() {
+                pixels = layers.iter().fold(pixels, |mut pic, layer| {
+                    for (y, row) in layer.iter().chunks(WIDTH).into_iter().enumerate() {
                         for (x, px) in row.enumerate() {
                             if pic[y][x] == 2 {
-                                dbg!(y, x);
                                 pic[y][x] = *px;
                             }
                         }
@@ -53,7 +52,18 @@ pub fn base() {
 
                     pic
                 });
-                //let image =
+
+                for row in &pixels {
+                    let text = row
+                        .iter()
+                        .map(|x| match x {
+                            0 => " ",
+                            1 => "#",
+                            _ => " ",
+                        })
+                        .join("");
+                    println!("{}", text);
+                }
             }
         }
     }
