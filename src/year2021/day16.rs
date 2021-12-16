@@ -1,56 +1,54 @@
 use crate::utils::*;
-
+use nom::bits::{bits, complete::take};
 use nom::{
-    IResult,
     bytes::complete::{tag, take_while_m_n},
     combinator::map_res,
-    sequence::tuple,
     error::{Error, ParseError},
+    lib::std::ops::{AddAssign, RangeFrom, Shl, Shr},
     multi::many0,
-    InputIter,
-    InputLength,
-    Slice,
-    lib::std::ops::{Shl, Shr, RangeFrom, AddAssign},
-    ToUsize
+    sequence::tuple,
+    IResult, InputIter, InputLength, Slice, ToUsize,
 };
-use nom::bits::{bits, complete::take};
 
 #[derive(Debug, Clone)]
 pub struct Packet {
     version: usize,
-    content: PacketContent
+    content: PacketContent,
 }
 
 #[derive(Debug, Clone)]
 pub enum PacketContent {
-    Literal(i64),
-    Operator(u8, Vec<Packet>)
+    Literal(u64),
+    Operator(u8, Vec<Packet>),
 }
 
 impl Packet {
     pub fn count_versions(&self) -> usize {
         let child_version_sum = match &self.content {
-            PacketContent::Operator(_, children) => children.iter().map(|x| x.count_versions()).sum(),
-            _ => 0
+            PacketContent::Operator(_, children) => {
+                children.iter().map(|x| x.count_versions()).sum()
+            }
+            _ => 0,
         };
-        return self.version + child_version_sum
+        return self.version + child_version_sum;
     }
 }
 
 impl PacketContent {
-
     pub fn type_id(&self) -> u8 {
         match self {
-            PacketContent::Literal(val) => 4,
-            PacketContent::Operator(type_id, _) => *type_id
+            PacketContent::Literal(_) => 4,
+            PacketContent::Operator(type_id, _) => *type_id,
         }
     }
 
-    pub fn eval(&self) -> i64 {
+    pub fn eval(&self) -> u64 {
         match self {
             PacketContent::Literal(val) => *val,
             PacketContent::Operator(type_id, packets) => {
-                let mut values = packets.iter().map(|x| x.content.eval());
+                let mut values: Vec<_> = packets.iter().map(|x| x.content.eval()).collect();
+                //dbg!(&values);
+                let mut values = values.into_iter();
                 match *type_id {
                     0 => values.sum(),
                     1 => values.fold(1, |acc, x| acc * x),
@@ -64,7 +62,7 @@ impl PacketContent {
                         } else {
                             0
                         }
-                    },
+                    }
                     6 => {
                         let first = values.next().unwrap();
                         let second = values.next().unwrap();
@@ -73,7 +71,7 @@ impl PacketContent {
                         } else {
                             0
                         }
-                    },
+                    }
                     7 => {
                         let first = values.next().unwrap();
                         let second = values.next().unwrap();
@@ -83,7 +81,7 @@ impl PacketContent {
                             0
                         }
                     }
-                    _x => panic!("unknown operator type {}", _x)
+                    _x => panic!("unknown operator type {}", _x),
                 }
             }
         }
@@ -91,26 +89,26 @@ impl PacketContent {
 }
 
 #[test]
-pub fn base() {
+pub fn day_16() {
     if let Ok(lines) = read_lines("./src/year2021/data/day16input.txt") {
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
-                let bytes = many0(hex_primary)(&contents).unwrap();
-                let (i, (packet, packet_size)) = bits::<_, _, Error<(&[u8], usize)>, Error<&[u8]>, _>(parse_packet)(&bytes.1).unwrap();
-                //dbg!(&packet);
-                dbg!(packet.count_versions());
-                dbg!(packet.content.type_id());
-                dbg!(packet.content.eval());
+                dbg!(eval_packet(&contents));
             }
         }
     }
 }
 
-
-pub fn eval_packet(text: &str) -> i64 {
-    let bytes = many0(hex_primary)(&text).unwrap();
-    let (i, (packet, packet_size)) = bits::<_, _, Error<(&[u8], usize)>, Error<&[u8]>, _>(parse_packet)(&bytes.1).unwrap();
+pub fn eval_packet(text: &str) -> u64 {
+    let mut bytes = many0(hex_primary)(&text).unwrap();
+    if bytes.0.len() > 0 {
+        let byte = u8::from_str_radix(&bytes.0, 16).unwrap();
+        bytes.1.push(byte << 4);
+    }
+    //dbg!(&bytes);
+    let (i, (packet, packet_size)) =
+        bits::<_, _, Error<(&[u8], usize)>, Error<&[u8]>, _>(parse_packet)(&bytes.1).unwrap();
     packet.content.eval()
 }
 
@@ -124,65 +122,31 @@ pub fn test_1() {
     assert_eq!(eval_packet("F600BC2D8F"), 0);
     assert_eq!(eval_packet("9C005AC2F8F0"), 0);
     assert_eq!(eval_packet("9C0141080250320F1802104A08"), 1);
-}
-
-
-
-fn from_hex(input: &str) -> Result<u8, std::num::ParseIntError> {
-    u8::from_str_radix(input, 16)
-}
-
-fn is_hex_digit(c: char) -> bool {
-    c.is_digit(16)
-}
-
-fn hex_primary(input: &str) -> IResult<&str, u8> {
-    map_res(
-        take_while_m_n(2, 2, is_hex_digit),
-        from_hex
-    )(input)
-}
-
-fn packet_version(i: (&[u8], usize)) -> IResult<(&[u8], usize), usize> {
-    take(3usize)(i)
-}
-fn packet_type(i: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
-    take(3usize)(i)
-}
-fn literal_value(i: (&[u8], usize)) -> IResult<(&[u8], usize), (u8, i64)> {
-    tuple((take(1usize), take(4usize)))(i)
-}
-fn length_id(i: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
-    take(1usize)(i)
+    assert_eq!(eval_packet("3232D42BF9400"), 5000000000);
+    assert_eq!(
+        eval_packet("3600888023024c01150044c0118330a440118330e44011833085c0118522008c29870"),
+        1
+    );
 }
 
 fn parse_packet(mut i: (&[u8], usize)) -> IResult<(&[u8], usize), (Packet, usize)> {
     let (i, version) = packet_version(i)?;
-    let (mut i, id) = packet_type(i)?;
+    let (i, id) = packet_type(i)?;
     let mut packet_size = 6usize;
-    let packet = if id == 4 {
-        let (j, (content, content_size)) = parse_literal(i, false)?;
-        i = j;
-        packet_size += content_size;
-        Packet {
-            version,
-            content
-        }
+
+    let (i, (content, content_size)) = if id == 4 {
+        parse_literal(i)?
     } else {
-        let (j, (content, content_size)) = parse_operator(i, id)?;
-        i = j;
-        packet_size += content_size;
-        Packet {
-            version,
-            content
-        }
+        parse_operator(i, id)?
     };
+    packet_size += content_size;
+    let packet = Packet { version, content };
 
     Ok((i, (packet, packet_size)))
 }
 
-fn parse_literal(mut i: (&[u8], usize), trim_padding: bool) -> IResult<(&[u8], usize), (PacketContent, usize)> {
-    let mut value = 0i64;
+fn parse_literal(mut i: (&[u8], usize)) -> IResult<(&[u8], usize), (PacketContent, usize)> {
+    let mut value = 0u64;
     let mut end = 1u8;
     let mut literal_size = 0usize;
     while end != 0 {
@@ -192,40 +156,39 @@ fn parse_literal(mut i: (&[u8], usize), trim_padding: bool) -> IResult<(&[u8], u
         value = (value << 4) | curr_val;
         literal_size += 5;
     }
-    if trim_padding {
-        let padding = i.1 % 4;
-        if padding > 0 {
-            let (j, _): (_, u8) = take(4usize - padding)(i)?;
-            i = j;
-            literal_size += 4 - padding;
-        }
-    }
+
     Ok((i, (PacketContent::Literal(value), literal_size)))
 }
 
-fn parse_operator(i: (&[u8], usize), type_id: u8) -> IResult<(&[u8], usize), (PacketContent, usize)> {
+fn parse_operator(
+    i: (&[u8], usize),
+    type_id: u8,
+) -> IResult<(&[u8], usize), (PacketContent, usize)> {
     let (mut i, length_id) = length_id(i)?;
     let mut children = Vec::new();
     let mut packet_len = 1usize;
     if length_id == 0 {
-        let (j, length): (_, usize) = take(15usize)(i)?;
-        i = j;
-
+        let (child_start, length) = take_u64(i, 15)?;
+        i = child_start;
         packet_len += length as usize;
 
-
+        let mut curr = i;
+        let needed_bytes = ((curr.1 + length as usize) as f64 / 8.).ceil() as usize;
+        curr.0 = &curr.0[0..needed_bytes];
         let mut curr_child_len = 0usize;
-        while curr_child_len < length {
-            if let Ok((j, (child, child_len))) = parse_packet(i) {
+        while curr_child_len < length as usize {
+            if let Ok((j, (child, child_len))) = parse_packet(curr) {
                 curr_child_len += child_len;
                 children.push(child);
-                i = j;
+                curr = j;
             } else {
                 break;
             }
         }
+
+        i = skip_bits(i, length as usize);
     } else {
-        let (j, length): (_, usize) = take(11usize)(i)?;
+        let (j, length) = take_u64(i, 11)?;
         i = j;
         for _ in 0..length {
             if let Ok((j, (child, child_len))) = parse_packet(i) {
@@ -239,6 +202,45 @@ fn parse_operator(i: (&[u8], usize), type_id: u8) -> IResult<(&[u8], usize), (Pa
     }
 
     Ok((i, (PacketContent::Operator(type_id, children), packet_len)))
+}
+
+fn from_hex(input: &str) -> Result<u8, std::num::ParseIntError> {
+    u8::from_str_radix(input, 16)
+}
+
+fn is_hex_digit(c: char) -> bool {
+    c.is_digit(16)
+}
+
+fn hex_primary(input: &str) -> IResult<&str, u8> {
+    map_res(take_while_m_n(2, 2, is_hex_digit), from_hex)(input)
+}
+
+fn packet_version(i: (&[u8], usize)) -> IResult<(&[u8], usize), usize> {
+    take(3usize)(i)
+}
+fn packet_type(i: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
+    take(3usize)(i)
+}
+fn literal_value(i: (&[u8], usize)) -> IResult<(&[u8], usize), (u8, u64)> {
+    tuple((take(1usize), take(4usize)))(i)
+}
+fn length_id(i: (&[u8], usize)) -> IResult<(&[u8], usize), u8> {
+    take(1usize)(i)
+}
+
+fn take_u64(i: (&[u8], usize), len: usize) -> IResult<(&[u8], usize), u64> {
+    take(len)(i)
+}
+
+fn skip_bits(i: (&[u8], usize), len: usize) -> (&[u8], usize) {
+    let dest_byte = (i.1 + len) / 8;
+    let offset = (i.1 + len) % 8;
+    if dest_byte < i.0.len() {
+        (&i.0[dest_byte..], offset)
+    } else {
+        (&i.0[i.0.len()..], 0)
+    }
 }
 
 fn collect_bit_slice(mut i: (&[u8], usize), len: usize) -> IResult<(&[u8], usize), Vec<u8>> {
