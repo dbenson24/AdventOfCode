@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use crate::utils::*;
 use nom::bits::{bits, complete::take};
 use nom::{
@@ -34,6 +36,23 @@ impl Packet {
     }
 }
 
+#[derive(Debug)]
+pub struct PacketParseError();
+impl FromStr for Packet {
+    type Err = PacketParseError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut bytes = many0(hex_primary)(s).unwrap();
+        if bytes.0.len() > 0 {
+            let byte = u8::from_str_radix(&bytes.0, 16).unwrap();
+            bytes.1.push(byte << 4);
+        }
+        let (i, (packet, packet_size)) =
+            bits::<_, _, Error<(&[u8], usize)>, Error<&[u8]>, _>(parse_packet)(&bytes.1).unwrap();
+
+        Ok(packet)
+    }
+}
+
 impl PacketContent {
     pub fn type_id(&self) -> u8 {
         match self {
@@ -47,40 +66,15 @@ impl PacketContent {
             PacketContent::Literal(val) => *val,
             PacketContent::Operator(type_id, packets) => {
                 let mut values: Vec<_> = packets.iter().map(|x| x.content.eval()).collect();
-                //dbg!(&values);
                 let mut values = values.into_iter();
                 match *type_id {
                     0 => values.sum(),
                     1 => values.fold(1, |acc, x| acc * x),
                     2 => values.min().unwrap(),
                     3 => values.max().unwrap(),
-                    5 => {
-                        let first = values.next().unwrap();
-                        let second = values.next().unwrap();
-                        if first > second {
-                            1
-                        } else {
-                            0
-                        }
-                    }
-                    6 => {
-                        let first = values.next().unwrap();
-                        let second = values.next().unwrap();
-                        if first < second {
-                            1
-                        } else {
-                            0
-                        }
-                    }
-                    7 => {
-                        let first = values.next().unwrap();
-                        let second = values.next().unwrap();
-                        if first == second {
-                            1
-                        } else {
-                            0
-                        }
-                    }
+                    5 => (values.next().unwrap() > values.next().unwrap()) as u64,
+                    6 => (values.next().unwrap() < values.next().unwrap()) as u64,
+                    7 => (values.next().unwrap() == values.next().unwrap()) as u64,
                     _x => panic!("unknown operator type {}", _x),
                 }
             }
@@ -88,7 +82,6 @@ impl PacketContent {
     }
 }
 
-#[test]
 pub fn day_16() {
     if let Ok(lines) = read_lines("./src/year2021/data/day16input.txt") {
         // Consumes the iterator, returns an (Optional) String
@@ -101,14 +94,7 @@ pub fn day_16() {
 }
 
 pub fn eval_packet(text: &str) -> u64 {
-    let mut bytes = many0(hex_primary)(&text).unwrap();
-    if bytes.0.len() > 0 {
-        let byte = u8::from_str_radix(&bytes.0, 16).unwrap();
-        bytes.1.push(byte << 4);
-    }
-    //dbg!(&bytes);
-    let (i, (packet, packet_size)) =
-        bits::<_, _, Error<(&[u8], usize)>, Error<&[u8]>, _>(parse_packet)(&bytes.1).unwrap();
+    let packet: Packet = text.parse().unwrap();
     packet.content.eval()
 }
 
@@ -241,20 +227,4 @@ fn skip_bits(i: (&[u8], usize), len: usize) -> (&[u8], usize) {
     } else {
         (&i.0[i.0.len()..], 0)
     }
-}
-
-fn collect_bit_slice(mut i: (&[u8], usize), len: usize) -> IResult<(&[u8], usize), Vec<u8>> {
-    let taken = 0;
-    let leftover = len % 8;
-    let complete_len = len - leftover;
-    let mut bytes = Vec::new();
-    while taken < complete_len {
-        let (j, b): (_, u8) = take(8usize)(i)?;
-        i = j;
-        bytes.push(b)
-    }
-    let (i, remaining): (_, u8) = take(leftover)(i)?;
-    let remaining = remaining << (8 - leftover);
-    bytes.push(remaining);
-    Ok((i, bytes))
 }

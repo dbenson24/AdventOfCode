@@ -10,7 +10,7 @@ fn main() {
     //year2021::day6::calc_fish_buckets(days);
     let now = Instant::now();
 
-    year2021::day15::ridged_noise();
+    year2021::day16::day_16();
 
     let elapsed = now.elapsed();
     println!("{} ms", elapsed.as_millis());
