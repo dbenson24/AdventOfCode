@@ -5,7 +5,7 @@ use crate::utils::*;
 #[test]
 pub fn count_intersections() {
     if let Ok(lines) = read_lines("./src/year2021/data/day5input.txt") {
-        let mut world: World<bool> = World::new();
+        let mut world: VecWorld<bool> = VecWorld::new();
         let mut intersections: HashSet<Vec2> = HashSet::new();
         let skip_diagonal = true;
         // Consumes the iterator, returns an (Optional) String

@@ -48,7 +48,7 @@ pub fn parse_command(command: &str) -> (i32, Vec2) {
 pub fn find_closest_intersect() {
     if let Ok(lines) = read_lines("./src/year2019/data/day3input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        let mut world: World<bool> = World::new();
+        let mut world: VecWorld<bool> = VecWorld::new();
         let mut min_dist = 9999999;
         for (line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
@@ -90,7 +90,7 @@ pub fn find_closest_intersect() {
 pub fn find_min_sig_delay_intersect() {
     if let Ok(lines) = read_lines("./src/year2019/data/day3input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        let mut world: World<i32> = World::new();
+        let mut world: VecWorld<i32> = VecWorld::new();
         let mut min_delay = 9999999;
         for (line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
