@@ -1,12 +1,10 @@
-use glam::IVec2;
+pub use glam::{IVec2, Vec2};
 use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
 use pad::PadStr;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
-
-pub type Vec2 = IVec2;
 
 // The output is wrapped in a Result to allow matching on errors
 // Returns an Iterator to the Reader of the lines of the file.
@@ -30,24 +28,24 @@ impl<T: Default + Clone> VecWorld<T> {
         }
     }
 
-    pub fn get(&self, pos: Vec2) -> &T {
+    pub fn get(&self, pos: IVec2) -> &T {
         &self.data[(pos.x + 25000) as usize][(pos.y + 25000) as usize]
     }
 
-    pub fn set(&mut self, pos: Vec2, val: T) {
+    pub fn set(&mut self, pos: IVec2, val: T) {
         self.data[(pos.x + 25000) as usize][(pos.y + 25000) as usize] = val;
     }
 }
 
-pub fn get_neighbors(pos: Vec2) -> [Vec2; 8] {
+pub fn get_neighbors(pos: IVec2) -> [IVec2; 8] {
     let x = pos.x;
     let y = pos.y;
     let mut i = 0;
-    let mut neighs: [Vec2; 8] = Default::default();
+    let mut neighs: [IVec2; 8] = Default::default();
     for x_i in x - 1..x + 2 {
         for y_i in y - 1..y + 2 {
             if !(x == x_i && y == y_i) {
-                neighs[i] = Vec2::new(x_i, y_i);
+                neighs[i] = IVec2::new(x_i, y_i);
                 i += 1;
             }
         }
@@ -55,19 +53,19 @@ pub fn get_neighbors(pos: Vec2) -> [Vec2; 8] {
     neighs
 }
 
-pub fn get_cardinal_neighbors(pos: Vec2) -> [Vec2; 4] {
+pub fn get_cardinal_neighbors(pos: IVec2) -> [IVec2; 4] {
     let x = pos.x;
     let y = pos.y;
 
     [
-        Vec2::new(x - 1, y),
-        Vec2::new(x + 1, y),
-        Vec2::new(x, y - 1),
-        Vec2::new(x, y + 1),
+        IVec2::new(x - 1, y),
+        IVec2::new(x + 1, y),
+        IVec2::new(x, y - 1),
+        IVec2::new(x, y + 1),
     ]
 }
 pub struct World<T> {
-    pub world: HashMap<Vec2, T>,
+    pub world: HashMap<IVec2, T>,
 }
 
 impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World<T> {
@@ -82,7 +80,7 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
                         .map(|s| s.parse::<T>().unwrap_or_default())
                         .enumerate()
                     {
-                        let pos = Vec2::new(x as i32, y as i32);
+                        let pos = IVec2::new(x as i32, y as i32);
                         world.insert(pos, height);
                     }
                 }
@@ -99,7 +97,7 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
         for y in 0..=max_y {
             let mut row = vec![];
             for x in 0..=max_x {
-                let pos = Vec2::new(x, y);
+                let pos = IVec2::new(x, y);
                 if let Some(val) = self.world.get(&pos) {
                     row.push(val.to_string().pad_to_width(5));
                 } else {
@@ -115,6 +113,23 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
     }
     pub fn max_y(&self) -> i32 {
         self.world.keys().map(|pos| pos.y).max().unwrap()
+    }
+}
+
+pub fn pretty_print_set(set: &HashSet<IVec2>, str_fn: &Fn(&IVec2) -> String, width: usize) {
+    let max_y = set.iter().map(|pos| pos.y).max().unwrap();
+    let max_x = set.iter().map(|pos| pos.x).max().unwrap();
+    for y in 0..=max_y {
+        let mut row = vec![];
+        for x in 0..=max_x {
+            let pos = IVec2::new(x, y);
+            if let Some(val) = set.get(&pos) {
+                row.push(str_fn(val).pad_to_width(width));
+            } else {
+                row.push(" ".to_string().pad_to_width(width));
+            }
+        }
+        println!("{}", row.iter().join(""));
     }
 }
 

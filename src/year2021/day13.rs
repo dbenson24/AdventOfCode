@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::utils::*;
 
-pub fn fold_paper(paper: &HashSet<Vec2>, axis: usize, val: i32) -> HashSet<Vec2> {
+pub fn fold_paper(paper: &HashSet<IVec2>, axis: usize, val: i32) -> HashSet<IVec2> {
     paper.iter().fold(HashSet::new(), |mut acc, elem| {
         let new_elem = if elem[axis] < val {
             *elem
@@ -16,13 +16,13 @@ pub fn fold_paper(paper: &HashSet<Vec2>, axis: usize, val: i32) -> HashSet<Vec2>
     })
 }
 
-pub fn pretty_print(paper: &HashSet<Vec2>) {
+pub fn pretty_print(paper: &HashSet<IVec2>) {
     let max_x = paper.iter().map(|x| x.x).max().unwrap();
     let max_y = paper.iter().map(|x| x.x).max().unwrap();
     for y in 0..max_y {
         let mut row = vec![];
         for x in 0..=max_x {
-            let pos = Vec2::new(x, y);
+            let pos = IVec2::new(x, y);
             if paper.contains(&pos) {
                 row.push("#");
             } else {
@@ -45,7 +45,7 @@ pub fn day_13() {
                 let pair: Vec<_> = contents.split(",").collect();
                 if pair.len() > 1 {
                     let ints: Vec<i32> = pair.iter().map(|s| s.parse().unwrap()).collect();
-                    paper.insert(Vec2::new(ints[0], ints[1]));
+                    paper.insert(IVec2::new(ints[0], ints[1]));
                 } else {
                     let fold_line: Vec<_> = contents.split_whitespace().collect();
                     if fold_line.len() == 3 {

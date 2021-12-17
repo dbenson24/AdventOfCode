@@ -8,11 +8,11 @@ use std::collections::BinaryHeap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct WeightedPos {
     pub weight: usize,
-    pub pos: Vec2,
+    pub pos: IVec2,
 }
 
 impl WeightedPos {
-    pub fn new(weight: usize, pos: Vec2) -> Self {
+    pub fn new(weight: usize, pos: IVec2) -> Self {
         WeightedPos { weight, pos }
     }
 }
@@ -40,7 +40,7 @@ pub fn ridged_noise() {
             .clamp(-1., 1.);
         let brightness = (((val + 1.) / 2.) * 255.) as u8;
         world.insert(
-            Vec2::new(x as i32, y as i32),
+            IVec2::new(x as i32, y as i32),
             (255 - brightness) as usize * 10,
         );
         image::Luma([brightness])
@@ -64,7 +64,7 @@ pub fn day_15() {
                     if x == 0 && y == 0 {
                         continue;
                     }
-                    let pos = Vec2::new((x * max_x) + pt.x, (y * max_y) + pt.y);
+                    let pos = IVec2::new((x * max_x) + pt.x, (y * max_y) + pt.y);
 
                     map.world
                         .insert(pos, ((weight + x as usize + y as usize) % 9) + 1);
@@ -79,13 +79,13 @@ pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
     let mut completed = HashSet::new();
     let mut heap: BinaryHeap<WeightedPos> = BinaryHeap::new();
     let mut distances = HashMap::new();
-    heap.push(WeightedPos::new(0, Vec2::new(0, 0)));
+    heap.push(WeightedPos::new(0, IVec2::new(0, 0)));
     for pos in map.world.keys() {
         distances.insert(*pos, usize::MAX);
     }
-    distances.insert(Vec2::new(0, 0), 0);
+    distances.insert(IVec2::new(0, 0), 0);
 
-    let end = Vec2::new(map.max_x(), map.max_y());
+    let end = IVec2::new(map.max_x(), map.max_y());
     let mut visit_num = 0;
     let diagnostics = false;
     let mut visited_world = World {
@@ -107,7 +107,7 @@ pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
     let nodes_per_frame = ((image_width * image_height) / (24 * 20)).max(1);
     let mut frame_num = 0;
 
-    let mut write_frame = |distances: &HashMap<Vec2, usize>| {
+    let mut write_frame = |distances: &HashMap<IVec2, usize>| {
         let max = (*distances
             .values()
             .filter(|&&x| x < usize::MAX)
@@ -118,7 +118,7 @@ pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
             image_width * px_per_node,
             image_height * px_per_node,
             |x, y| {
-                let pos = Vec2::new((x / px_per_node) as i32, (y / px_per_node) as i32);
+                let pos = IVec2::new((x / px_per_node) as i32, (y / px_per_node) as i32);
                 let distance = *distances.get(&pos).unwrap_or(&0);
                 let distance = (distance as f32).min(max);
                 let ratio = (distance as f32) / (max as f32);

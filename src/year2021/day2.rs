@@ -10,13 +10,13 @@ enum Direction {
     BACKWARD,
 }
 
-impl From<Direction> for Vec2 {
-    fn from(dir: Direction) -> Vec2 {
+impl From<Direction> for IVec2 {
+    fn from(dir: Direction) -> IVec2 {
         match dir {
-            Direction::UP => Vec2::new(0, -1),
-            Direction::DOWN => Vec2::new(0, 1),
-            Direction::FORWARD => Vec2::new(1, 0),
-            Direction::BACKWARD => Vec2::new(-1, 0),
+            Direction::UP => IVec2::new(0, -1),
+            Direction::DOWN => IVec2::new(0, 1),
+            Direction::FORWARD => IVec2::new(1, 0),
+            Direction::BACKWARD => IVec2::new(-1, 0),
         }
     }
 }
@@ -48,8 +48,8 @@ impl FromStr for Movement {
 }
 
 impl Movement {
-    pub fn get_move(&self) -> Vec2 {
-        let dir: Vec2 = self.dir.into();
+    pub fn get_move(&self) -> IVec2 {
+        let dir: IVec2 = self.dir.into();
         dir * self.dist
     }
 }
@@ -78,7 +78,7 @@ impl FromStr for Direction {
 fn track_movement() {
     // File hosts must exist in current path before this produces output
     if let Ok(lines) = read_lines("./src/year2021/data/day2input.txt") {
-        let mut pos = Vec2::new(0, 0);
+        let mut pos = IVec2::new(0, 0);
         let mut aim = 0;
         // Consumes the iterator, returns an (Optional) String
         for line in lines {
@@ -89,7 +89,7 @@ fn track_movement() {
                     pos.x += movement.dist;
                     pos.y += aim * movement.dist;
                 } else {
-                    let dir: Vec2 = movement.dir.into();
+                    let dir: IVec2 = movement.dir.into();
                     aim += dir.y * movement.dist;
                 }
             }

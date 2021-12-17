@@ -6,7 +6,7 @@ use crate::utils::*;
 pub fn count_intersections() {
     if let Ok(lines) = read_lines("./src/year2021/data/day5input.txt") {
         let mut world: VecWorld<bool> = VecWorld::new();
-        let mut intersections: HashSet<Vec2> = HashSet::new();
+        let mut intersections: HashSet<IVec2> = HashSet::new();
         let skip_diagonal = true;
         // Consumes the iterator, returns an (Optional) String
         for (line_num, line) in lines.enumerate() {
@@ -15,7 +15,7 @@ pub fn count_intersections() {
                     .split(" -> ")
                     .map(|s| {
                         let nums: Vec<i32> = s.split(",").map(|x| x.parse().unwrap()).collect();
-                        Vec2::new(nums[0], nums[1])
+                        IVec2::new(nums[0], nums[1])
                     })
                     .collect();
                 let a = points[0];
@@ -40,7 +40,7 @@ pub fn count_intersections() {
                         let x_dist = (x - a.x).abs();
                         let y_dist = (y - a.y).abs();
                         if x_dist == y_dist || (flat && (x_dist == 0 || y_dist == 0)) {
-                            let pos = Vec2::new(x, y);
+                            let pos = IVec2::new(x, y);
                             check_pos(pos);
                         }
                     }

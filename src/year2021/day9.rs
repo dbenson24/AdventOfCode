@@ -3,18 +3,18 @@ use std::collections::{HashMap, HashSet};
 use crate::utils::*;
 
 struct HeightMap {
-    pub world: HashMap<Vec2, i32>,
+    pub world: HashMap<IVec2, i32>,
     pub max_x: i32,
     pub max_y: i32,
 }
 
 impl HeightMap {
-    pub fn get_low_points(&self) -> Vec<Vec2> {
+    pub fn get_low_points(&self) -> Vec<IVec2> {
         let mut lows = vec![];
         for x in 0..=self.max_x as i32 {
             for y in 0..=self.max_y as i32 {
                 {
-                    let pos = Vec2::new(x, y);
+                    let pos = IVec2::new(x, y);
                     if self.is_low_point(pos) {
                         lows.push(pos)
                     }
@@ -24,7 +24,7 @@ impl HeightMap {
         lows
     }
 
-    fn is_low_point(&self, pos: Vec2) -> bool {
+    fn is_low_point(&self, pos: IVec2) -> bool {
         let positions = HeightMap::get_neighbors(pos);
         let height = self.world[&pos];
         positions.iter().all(|pos| {
@@ -36,24 +36,24 @@ impl HeightMap {
         })
     }
 
-    fn get_neighbors(pos: Vec2) -> [Vec2; 4] {
+    fn get_neighbors(pos: IVec2) -> [IVec2; 4] {
         let x = pos.x;
         let y = pos.y;
         [
-            Vec2::new(x, y - 1),
-            Vec2::new(x, y + 1),
-            Vec2::new(x - 1, y),
-            Vec2::new(x + 1, y),
+            IVec2::new(x, y - 1),
+            IVec2::new(x, y + 1),
+            IVec2::new(x - 1, y),
+            IVec2::new(x + 1, y),
         ]
     }
 
-    pub fn calc_basin_size(&self, pos: Vec2) -> i32 {
+    pub fn calc_basin_size(&self, pos: IVec2) -> i32 {
         if !self.is_low_point(pos) {
             panic!("trying to calc basin from non low point");
         }
 
         let mut stack = vec![pos];
-        let mut visited: HashSet<Vec2> = HashSet::new();
+        let mut visited: HashSet<IVec2> = HashSet::new();
         let mut size = 0;
         while let Some(curr_pos) = stack.pop() {
             if visited.contains(&curr_pos) {
@@ -77,7 +77,7 @@ impl HeightMap {
 #[test]
 pub fn day_9_part_1() {
     if let Ok(lines) = read_lines("./src/year2021/data/day9input.txt") {
-        let mut world: HashMap<Vec2, i32> = HashMap::new();
+        let mut world: HashMap<IVec2, i32> = HashMap::new();
         // Consumes the iterator, returns an (Optional) String
         let mut max_x = 0;
         let mut max_y = 0;
@@ -89,7 +89,7 @@ pub fn day_9_part_1() {
                     .map(|s| s.parse::<i32>().unwrap())
                     .enumerate()
                 {
-                    let pos = Vec2::new(x as i32, y as i32);
+                    let pos = IVec2::new(x as i32, y as i32);
                     world.insert(pos, height);
                     max_x = max_x.max(x);
                 }
@@ -115,7 +115,7 @@ pub fn day_9_part_1() {
 #[test]
 pub fn day_9_part_2() {
     if let Ok(lines) = read_lines("./src/year2021/data/day9input.txt") {
-        let mut world: HashMap<Vec2, i32> = HashMap::new();
+        let mut world: HashMap<IVec2, i32> = HashMap::new();
         // Consumes the iterator, returns an (Optional) String
         let mut max_x = 0;
         let mut max_y = 0;
@@ -127,7 +127,7 @@ pub fn day_9_part_2() {
                     .map(|s| s.parse::<i32>().unwrap())
                     .enumerate()
                 {
-                    let pos = Vec2::new(x as i32, y as i32);
+                    let pos = IVec2::new(x as i32, y as i32);
                     world.insert(pos, height);
                     max_x = max_x.max(x);
                 }

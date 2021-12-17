@@ -9,13 +9,13 @@ enum Direction {
     RIGHT,
 }
 
-impl From<Direction> for Vec2 {
-    fn from(dir: Direction) -> Vec2 {
+impl From<Direction> for IVec2 {
+    fn from(dir: Direction) -> IVec2 {
         match dir {
-            Direction::UP => Vec2::new(0, 1),
-            Direction::DOWN => Vec2::new(0, -1),
-            Direction::LEFT => Vec2::new(-1, 0),
-            Direction::RIGHT => Vec2::new(1, 0),
+            Direction::UP => IVec2::new(0, 1),
+            Direction::DOWN => IVec2::new(0, -1),
+            Direction::LEFT => IVec2::new(-1, 0),
+            Direction::RIGHT => IVec2::new(1, 0),
         }
     }
 }
@@ -37,7 +37,7 @@ impl FromStr for Direction {
     }
 }
 
-pub fn parse_command(command: &str) -> (i32, Vec2) {
+pub fn parse_command(command: &str) -> (i32, IVec2) {
     let op = &command[0..1];
     let num: i32 = command[1..].parse().unwrap();
     let dir: Direction = op.parse().unwrap();
@@ -54,23 +54,23 @@ pub fn find_closest_intersect() {
             if let Ok(contents) = line {
                 dbg!(&contents);
                 if line_num == 0 {
-                    let mut pos = Vec2::new(0, 0);
+                    let mut pos = IVec2::new(0, 0);
                     // mark first positions
                     for command in contents.split(",") {
                         let (num, dir) = parse_command(command);
                         for i in 1..=num {
-                            let movement: Vec2 = dir * i;
+                            let movement: IVec2 = dir * i;
                             world.set(pos + movement, true);
                         }
                         pos += dir * num;
                     }
                 } else {
-                    let mut pos = Vec2::new(0, 0);
+                    let mut pos = IVec2::new(0, 0);
                     // mark first positions
                     for command in contents.split(",") {
                         let (num, dir) = parse_command(command);
                         for i in 1..=num {
-                            let movement: Vec2 = dir * i;
+                            let movement: IVec2 = dir * i;
                             if *world.get(pos + movement) {
                                 let dist = (pos + movement).abs().to_array().iter().sum::<i32>();
                                 println!("Collision at {}, dist={}", pos + movement, dist);
@@ -96,13 +96,13 @@ pub fn find_min_sig_delay_intersect() {
             if let Ok(contents) = line {
                 dbg!(&contents);
                 if line_num == 0 {
-                    let mut pos = Vec2::new(0, 0);
+                    let mut pos = IVec2::new(0, 0);
                     let mut delay = 0;
                     // mark first positions
                     for command in contents.split(",") {
                         let (num, dir) = parse_command(command);
                         for i in 1..=num {
-                            let movement: Vec2 = dir * i;
+                            let movement: IVec2 = dir * i;
                             if *world.get(pos + movement) == 0 {
                                 world.set(pos + movement, delay + i);
                             }
@@ -112,12 +112,12 @@ pub fn find_min_sig_delay_intersect() {
                         dbg!(delay);
                     }
                 } else {
-                    let mut pos = Vec2::new(0, 0);
+                    let mut pos = IVec2::new(0, 0);
                     let mut delay = 0;
                     for command in contents.split(",") {
                         let (num, dir) = parse_command(command);
                         for i in 1..=num {
-                            let movement: Vec2 = dir * i;
+                            let movement: IVec2 = dir * i;
                             if *world.get(pos + movement) > 0 {
                                 let other_delay = *world.get(pos + movement);
                                 println!(
