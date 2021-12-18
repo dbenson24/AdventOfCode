@@ -1,7 +1,12 @@
-use std::sync::mpsc::{Receiver, Sender};
-
+use crate::utils::*;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
+use std::{
+    error, fmt,
+    fmt::Error,
+    num::ParseIntError,
+    sync::mpsc::{Receiver, Sender},
+};
 
 #[derive(FromPrimitive, Debug, Clone, Copy)]
 enum Codes {
@@ -37,6 +42,16 @@ impl IntcodeMachine {
             numbers,
             last_output: None,
         }
+    }
+
+    pub fn parse_file() -> Result<Vec<i64>, Box<dyn error::Error>> {
+        let lines = read_lines("./src/year2019/data/day9input.txt")?;
+        for (line_num, line) in lines.enumerate() {
+            let numbers: Vec<i64> = line?.split(",").map(|s| s.parse().unwrap()).collect();
+            return Ok(numbers);
+        }
+
+        Err(Box::new(ParseIntVecErr))
     }
 
     pub fn run(&mut self, input: &Receiver<i64>, output: &Sender<i64>) {
@@ -140,3 +155,14 @@ impl IntcodeMachine {
         }
     }
 }
+
+#[derive(Debug)]
+struct ParseIntVecErr;
+
+impl fmt::Display for ParseIntVecErr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "unable to parse the vec of ints")
+    }
+}
+
+impl error::Error for ParseIntVecErr {}
