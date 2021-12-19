@@ -119,7 +119,10 @@ pub fn day_19() {
             scanners = scanners
                 .into_iter()
                 .filter(|&scanner| {
-                    for beacon in &scanner.beacons {
+                    let origin_and_pos = scanner.beacons.par_iter().fold(|| None, |acc, beacon| {
+                        if acc.is_some() {
+                            return acc;
+                        }
                         let dist = dist_to(*beacon);
                         let distances: HashMap<_, _> = scanner
                             .beacons
@@ -158,8 +161,11 @@ pub fn day_19() {
                                 }
                             }
                         }
+                        origin_and_pos
+                    }).find_any(|x| x.is_some());
 
-                        if let Some((origin, rot)) = origin_and_pos {
+                    if let Some(res) = origin_and_pos {
+                        if let Some((origin, rot)) = res {
                             scanner_positions.push(origin.round().as_ivec3());
                             for rel_pos in &scanner.beacons {
                                 let abs_pos = (rot.mul_vec3(*rel_pos) + origin).round();
@@ -168,7 +174,6 @@ pub fn day_19() {
                             return false;
                         }
                     }
-                    i += 1;
                     true
                 })
                 .collect();
