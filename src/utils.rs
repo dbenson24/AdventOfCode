@@ -1,4 +1,4 @@
-pub use glam::{IVec2, Vec2};
+pub use glam::{IVec2, IVec3, Quat, Vec2, Vec3};
 use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
 use pad::PadStr;
