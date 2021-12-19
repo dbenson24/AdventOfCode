@@ -32,12 +32,10 @@ impl SnailFish {
     pub fn reduce(&mut self) {
         loop {
             if let Some(_) = self.explode(0) {
-                dbg!("explode", serde_json::to_string(self));
                 continue;
             }
             
             if self.split() {
-                dbg!("split", serde_json::to_string(self));
                 continue;
             }
 
@@ -85,7 +83,7 @@ impl SnailFish {
                 if add_l > 0 {
                     match &mut self.0 {
                         FishVal::Val(b) => {
-                            self.1 = FishVal::Val(*b + add_l);
+                            self.0 = FishVal::Val(*b + add_l);
                             add_l = 0
                         },
                         FishVal::Child(left) => {
@@ -196,6 +194,7 @@ pub fn test_3() {
 pub fn test_4() {
     let input = "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]";
     let mut num = parse_snail(input).unwrap();
+    let mut num2 =  num.clone();
     dbg!(serde_json::to_string(&num));
     num.explode(0);
     dbg!(serde_json::to_string(&num));
@@ -207,6 +206,10 @@ pub fn test_4() {
     dbg!(serde_json::to_string(&num));
     num.explode(0);
     dbg!(serde_json::to_string(&num));
+
+    num2.reduce();
+    assert_eq!(serde_json::to_string(&num2).unwrap(), serde_json::to_string(&num).unwrap())
+    
 }
 
 #[test]
