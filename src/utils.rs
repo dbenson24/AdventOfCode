@@ -42,12 +42,26 @@ pub fn get_neighbors(pos: IVec2) -> [IVec2; 8] {
     let y = pos.y;
     let mut i = 0;
     let mut neighs: [IVec2; 8] = Default::default();
-    for x_i in x - 1..x + 2 {
-        for y_i in y - 1..y + 2 {
+    for y_i in y - 1..y + 2 {
+        for x_i in x - 1..x + 2 {
             if !(x == x_i && y == y_i) {
                 neighs[i] = IVec2::new(x_i, y_i);
                 i += 1;
             }
+        }
+    }
+    neighs
+}
+
+pub fn get_neighbors_and_pos(pos: IVec2) -> [IVec2; 9] {
+    let x = pos.x;
+    let y = pos.y;
+    let mut i = 0;
+    let mut neighs: [IVec2; 9] = Default::default();
+    for y_i in y - 1..y + 2 {
+        for x_i in x - 1..x + 2 {
+            neighs[i] = IVec2::new(x_i, y_i);
+            i += 1;
         }
     }
     neighs
@@ -94,9 +108,11 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
     pub fn pretty_print(&self) {
         let max_y = self.max_y();
         let max_x = self.max_x();
-        for y in 0..=max_y {
+        let min_x = self.min_x().min(0);
+        let min_y = self.min_y().min(0);
+        for y in min_y..=max_y {
             let mut row = vec![];
-            for x in 0..=max_x {
+            for x in min_x..=max_x {
                 let pos = IVec2::new(x, y);
                 if let Some(val) = self.world.get(&pos) {
                     row.push(val.to_string().pad_to_width(5));
@@ -113,6 +129,13 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
     }
     pub fn max_y(&self) -> i32 {
         self.world.keys().map(|pos| pos.y).max().unwrap()
+    }
+
+    pub fn min_x(&self) -> i32 {
+        self.world.keys().map(|pos| pos.x).min().unwrap()
+    }
+    pub fn min_y(&self) -> i32 {
+        self.world.keys().map(|pos| pos.y).min().unwrap()
     }
 }
 

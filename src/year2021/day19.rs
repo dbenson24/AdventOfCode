@@ -108,7 +108,7 @@ pub fn day_19() {
         let beacons = beacons.unwrap();
         scanners.push(Scanner { beacons });
 
-        /* 
+        /*
         Alternative Way - Match distances to pairs of points present in the dictionaries
         let dist_map: Vec<HashMap<i32, (Vec3, Vec3)>> = scanners.par_iter()
             .map(|scanner| scanner.beacons.iter()
@@ -131,50 +131,57 @@ pub fn day_19() {
             scanners = scanners
                 .into_iter()
                 .filter(|&scanner| {
-                    let origin_and_pos = scanner.beacons.par_iter().fold(|| None, |acc, beacon| {
-                        if acc.is_some() {
-                            return acc;
-                        }
-                        let dist = dist_to(*beacon);
-                        let distances: HashMap<_, _> = scanner
-                            .beacons
-                            .iter()
-                            .map(|p| (to_hash(dist(p)), *p))
-                            .collect();
-
-                        let mut origin_and_pos = None;
-
-                        for good_pos in &positioned_beacons {
-                            let good_dist = dist_to(good_pos.as_vec3());
-                            let mut good_distances: HashMap<_, _> = positioned_beacons
-                                .iter()
-                                .map(|p| (to_hash(good_dist(&p.as_vec3())), p.as_vec3()))
-                                .collect();
-
-                            let pairs: Vec<(Vec3, Vec3)> = good_distances
-                                .iter()
-                                .map(|(d, abs_pos)| {
-                                    if let Some(rel_pos) = distances.get(d) {
-                                        Some((*rel_pos, *abs_pos))
-                                    } else {
-                                        None
-                                    }
-                                })
-                                .filter(|x| x.is_some())
-                                .map(|x| x.unwrap())
-                                .collect();
-
-                            if pairs.len() >= 12 {
-                                if let Some((origin, rot)) =
-                                    get_origin_and_rotation(&pairs, &rotations)
-                                {
-                                    origin_and_pos = Some((origin, rot));
-                                    break;
+                    let origin_and_pos = scanner
+                        .beacons
+                        .par_iter()
+                        .fold(
+                            || None,
+                            |acc, beacon| {
+                                if acc.is_some() {
+                                    return acc;
                                 }
-                            }
-                        }
-                        origin_and_pos
-                    }).find_any(|x| x.is_some());
+                                let dist = dist_to(*beacon);
+                                let distances: HashMap<_, _> = scanner
+                                    .beacons
+                                    .iter()
+                                    .map(|p| (to_hash(dist(p)), *p))
+                                    .collect();
+
+                                let mut origin_and_pos = None;
+
+                                for good_pos in &positioned_beacons {
+                                    let good_dist = dist_to(good_pos.as_vec3());
+                                    let mut good_distances: HashMap<_, _> = positioned_beacons
+                                        .iter()
+                                        .map(|p| (to_hash(good_dist(&p.as_vec3())), p.as_vec3()))
+                                        .collect();
+
+                                    let pairs: Vec<(Vec3, Vec3)> = good_distances
+                                        .iter()
+                                        .map(|(d, abs_pos)| {
+                                            if let Some(rel_pos) = distances.get(d) {
+                                                Some((*rel_pos, *abs_pos))
+                                            } else {
+                                                None
+                                            }
+                                        })
+                                        .filter(|x| x.is_some())
+                                        .map(|x| x.unwrap())
+                                        .collect();
+
+                                    if pairs.len() >= 12 {
+                                        if let Some((origin, rot)) =
+                                            get_origin_and_rotation(&pairs, &rotations)
+                                        {
+                                            origin_and_pos = Some((origin, rot));
+                                            break;
+                                        }
+                                    }
+                                }
+                                origin_and_pos
+                            },
+                        )
+                        .find_any(|x| x.is_some());
 
                     if let Some(res) = origin_and_pos {
                         if let Some((origin, rot)) = res {
