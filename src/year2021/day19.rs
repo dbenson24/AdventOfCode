@@ -80,7 +80,7 @@ pub fn day_19() {
         }
     }
 
-    if let Ok(lines) = read_lines("./src/year2021/data/day19input.txt") {
+    if let Ok(lines) = read_lines("./src/year2021/data/day19testinput.txt") {
         // Consumes the iterator, returns an (Optional) String
         let mut scanners = vec![];
         let mut beacons = None;
@@ -107,6 +107,19 @@ pub fn day_19() {
         }
         let beacons = beacons.unwrap();
         scanners.push(Scanner { beacons });
+
+        /* 
+        Alternative Way - Match distances to pairs of points present in the dictionaries
+        let dist_map: Vec<HashMap<i32, (Vec3, Vec3)>> = scanners.par_iter()
+            .map(|scanner| scanner.beacons.iter()
+                .permutations(2)
+                .map(|xs| (to_hash(xs[0].distance(*xs[1])), (*xs[0], *xs[1]))).collect()).collect();
+
+
+        let overlap = dist_map[1].iter().filter(|a| dist_map[0].contains_key(a.0)).count();
+        dbg!(overlap);
+        */
+
         let scanner0 = scanners[0].clone();
         let mut scanners: Vec<_> = scanners[1..].into_iter().collect();
         let mut scanner_positions = vec![];
@@ -114,7 +127,6 @@ pub fn day_19() {
 
         let mut positioned_beacons: HashSet<IVec3> =
             scanner0.beacons.iter().map(|x| x.as_ivec3()).collect();
-        let mut i = 1;
         while scanners.len() > 0 {
             scanners = scanners
                 .into_iter()
