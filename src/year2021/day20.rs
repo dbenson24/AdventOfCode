@@ -1,6 +1,7 @@
 use crate::utils::*;
 use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
+use rayon::iter::*;
 
 pub struct InfiniteImage {
     pub pxs: HashMap<IVec2, u8>,
@@ -43,8 +44,8 @@ impl InfiniteImage {
 
     pub fn enhance(&self, data: &[u8]) -> InfiniteImage {
         let blinks = data[0] != data[data.len() - 1] && data[0] > 0;
-        let mut min_px = IVec2::new(i32::MAX, i32::MAX);
-        let mut max_px = IVec2::new(i32::MIN, i32::MIN);
+        let min_px = IVec2::new(i32::MAX, i32::MAX);
+        let max_px = IVec2::new(i32::MIN, i32::MIN);
         let recolor = |px: IVec2| {
             let mut shift = 8;
             let mut num = 0usize;
@@ -56,15 +57,18 @@ impl InfiniteImage {
             let color = data[num];
             color
         };
-
+        let (min_px, max_px) = self
+            .pxs
+            .par_keys()
+            .fold(
+                || (min_px, max_px),
+                |acc, &px| (acc.0.min(px), acc.1.max(px)),
+            )
+            .reduce(|| (min_px, max_px), |x, y| (x.0.min(y.0), x.1.max(y.1)));
         let mut img: HashMap<_, _> = self
             .pxs
-            .iter()
-            .map(|(&source_px, _)| {
-                min_px = min_px.min(source_px);
-                max_px = max_px.max(source_px);
-                (source_px, recolor(source_px))
-            })
+            .par_keys()
+            .map(|&source_px| (source_px, recolor(source_px)))
             .collect();
 
         let default = if blinks {
