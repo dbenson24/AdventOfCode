@@ -12,47 +12,6 @@ pub struct Scanner {
     pub beacons: Vec<Vec3>,
 }
 
-#[derive(Debug, Clone, Copy, FromPrimitive, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Direction {
-    Left,
-    Right,
-    Up,
-    Down,
-    Forward,
-    Backward,
-}
-
-impl Direction {
-    pub fn flipped(&self) -> Direction {
-        match self {
-            Direction::Forward => Direction::Backward,
-            Direction::Backward => Direction::Forward,
-            Direction::Left => Direction::Right,
-            Direction::Right => Direction::Left,
-            Direction::Up => Direction::Down,
-            Direction::Down => Direction::Up,
-        }
-    }
-}
-
-impl Into<Vec3> for &Direction {
-    fn into(self) -> Vec3 {
-        match self {
-            Direction::Left => Vec3::X * -1.,
-            Direction::Right => Vec3::X,
-            Direction::Up => Vec3::Y,
-            Direction::Down => Vec3::Y * -1.,
-            Direction::Forward => Vec3::Z,
-            Direction::Backward => Vec3::Z * -1.,
-        }
-    }
-}
-impl Into<Vec3> for Direction {
-    fn into(self) -> Vec3 {
-        (&self).into()
-    }
-}
-
 pub fn to_hash(x: f32) -> i32 {
     (x * 100.).round() as i32
 }
@@ -70,8 +29,8 @@ pub fn day_19() {
     let mut rotations: Vec<Quat> = vec![];
     for fwd in 0..6 {
         for up in 0..6 {
-            let fwd: Direction = FromPrimitive::from_i32(fwd).unwrap();
-            let up: Direction = FromPrimitive::from_i32(up).unwrap();
+            let fwd: Dir3 = FromPrimitive::from_i32(fwd).unwrap();
+            let up: Dir3 = FromPrimitive::from_i32(up).unwrap();
             if fwd != up && fwd.flipped() != up {
                 let mat = Mat4::look_at_lh(Vec3::ZERO, fwd.into(), up.into());
                 let (_, quat, _) = mat.to_scale_rotation_translation();

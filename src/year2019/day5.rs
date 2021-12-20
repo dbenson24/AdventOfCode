@@ -15,7 +15,7 @@ pub fn run_opcodes() {
 
             let mut machine = IntcodeMachine::new(numbers);
             let (tx, rx) = mpsc::channel();
-            tx.send(5).unwrap();
+            tx.send(Some(5)).unwrap();
             machine.run(&rx, &tx);
             dbg!(rx.recv().unwrap());
         }

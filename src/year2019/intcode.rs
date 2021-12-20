@@ -5,7 +5,7 @@ use std::{
     error, fmt,
     fmt::Error,
     num::ParseIntError,
-    sync::mpsc::{Receiver, Sender},
+    sync::mpsc::{channel, Receiver, Sender},
 };
 
 #[derive(FromPrimitive, Debug, Clone, Copy)]
@@ -44,8 +44,8 @@ impl IntcodeMachine {
         }
     }
 
-    pub fn parse_file() -> Result<Vec<i64>, Box<dyn error::Error>> {
-        let lines = read_lines("./src/year2019/data/day9input.txt")?;
+    pub fn parse_file(path: &str) -> Result<Vec<i64>, Box<dyn error::Error>> {
+        let lines = read_lines(path)?;
         for (line_num, line) in lines.enumerate() {
             let numbers: Vec<i64> = line?.split(",").map(|s| s.parse().unwrap()).collect();
             return Ok(numbers);
@@ -54,7 +54,26 @@ impl IntcodeMachine {
         Err(Box::new(ParseIntVecErr))
     }
 
-    pub fn run(&mut self, input: &Receiver<i64>, output: &Sender<i64>) {
+    pub fn looped_channels<T>(count: usize) -> Vec<(Receiver<T>, Sender<T>)> {
+        let (tx_0, mut rx_prev) = channel();
+        let (tx_n, rx_n) = channel();
+        let mut chans = vec![];
+        for _i in 0..(count - 2) {
+            chans.push(channel());
+        }
+
+        let mut linked_chans = vec![];
+        linked_chans.push((rx_n, tx_0));
+        for (tx, rx) in chans {
+            linked_chans.push((rx_prev, tx));
+            rx_prev = rx;
+        }
+        linked_chans.push((rx_prev, tx_n));
+
+        linked_chans
+    }
+
+    pub fn run(&mut self, input: &Receiver<Option<i64>>, output: &Sender<Option<i64>>) {
         let mut pos = 0;
         //let mut output = None;
         self.last_output = None;
@@ -95,7 +114,10 @@ impl IntcodeMachine {
                 }
                 Some(Codes::INPUT) => {
                     let a = param_1();
-                    self.numbers[a] = input.recv().unwrap();
+                    self.numbers[a] = match input.recv().unwrap() {
+                        Some(x) => x,
+                        None => return,
+                    };
                     pos += 2;
                 }
                 Some(Codes::OUTPUT) => {
@@ -103,7 +125,7 @@ impl IntcodeMachine {
                     let val = self.numbers[a];
                     self.last_output = Some(val);
                     self.last_output;
-                    output.send(val).unwrap();
+                    output.send(Some(val)).unwrap();
                     pos += 2;
                 }
                 Some(Codes::JUMPNONZERO) => {

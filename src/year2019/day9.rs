@@ -15,7 +15,7 @@ pub fn day_9() {
 
             let mut machine = IntcodeMachine::new(numbers);
             let (tx, rx) = mpsc::channel();
-            tx.send(2).unwrap();
+            tx.send(Some(2)).unwrap();
             machine.run(&rx, &tx);
             while let Ok(x) = rx.recv_timeout(Duration::new(0, 100000)) {
                 dbg!(x);

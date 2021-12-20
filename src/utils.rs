@@ -1,6 +1,8 @@
 pub use glam::{IVec2, IVec3, Quat, Vec2, Vec3};
 use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
+use num_derive::{FromPrimitive, ToPrimitive};
+use num_traits::*;
 use pad::PadStr;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -142,9 +144,11 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
 pub fn pretty_print_set(set: &HashSet<IVec2>, str_fn: &Fn(&IVec2) -> String, width: usize) {
     let max_y = set.iter().map(|pos| pos.y).max().unwrap();
     let max_x = set.iter().map(|pos| pos.x).max().unwrap();
-    for y in 0..=max_y {
+    let min_x = set.iter().map(|pos| pos.x).min().unwrap();
+    let min_y = set.iter().map(|pos| pos.y).min().unwrap();
+    for y in min_y..=max_y {
         let mut row = vec![];
-        for x in 0..=max_x {
+        for x in min_x..=max_x {
             let pos = IVec2::new(x, y);
             if let Some(val) = set.get(&pos) {
                 row.push(str_fn(val).pad_to_width(width));
@@ -153,6 +157,107 @@ pub fn pretty_print_set(set: &HashSet<IVec2>, str_fn: &Fn(&IVec2) -> String, wid
             }
         }
         println!("{}", row.iter().join(""));
+    }
+}
+
+#[derive(Debug, Clone, Copy, FromPrimitive, ToPrimitive, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Dir3 {
+    Left,
+    Right,
+    Up,
+    Down,
+    Forward,
+    Backward,
+}
+
+impl Dir3 {
+    pub fn flipped(&self) -> Dir3 {
+        match self {
+            Dir3::Forward => Dir3::Backward,
+            Dir3::Backward => Dir3::Forward,
+            Dir3::Left => Dir3::Right,
+            Dir3::Right => Dir3::Left,
+            Dir3::Up => Dir3::Down,
+            Dir3::Down => Dir3::Up,
+        }
+    }
+}
+
+impl Into<Vec3> for &Dir3 {
+    fn into(self) -> Vec3 {
+        match self {
+            Dir3::Left => Vec3::X * -1.,
+            Dir3::Right => Vec3::X,
+            Dir3::Up => Vec3::Y,
+            Dir3::Down => Vec3::Y * -1.,
+            Dir3::Forward => Vec3::Z,
+            Dir3::Backward => Vec3::Z * -1.,
+        }
+    }
+}
+impl Into<Vec3> for Dir3 {
+    fn into(self) -> Vec3 {
+        (&self).into()
+    }
+}
+
+#[derive(Debug, Clone, Copy, FromPrimitive, ToPrimitive, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Dir2 {
+    Left,
+    Up,
+    Right,
+    Down,
+}
+
+impl Dir2 {
+    pub fn flipped(&self) -> Dir2 {
+        match self {
+            Dir2::Left => Dir2::Right,
+            Dir2::Right => Dir2::Left,
+            Dir2::Up => Dir2::Down,
+            Dir2::Down => Dir2::Up,
+        }
+    }
+
+    pub fn turn_right(&self) -> Dir2 {
+        let i = (ToPrimitive::to_i32(self).unwrap() + 1) % 4;
+        FromPrimitive::from_i32(i).unwrap()
+    }
+    pub fn turn_left(&self) -> Dir2 {
+        let i = (ToPrimitive::to_i32(self).unwrap() + 3) % 4;
+        FromPrimitive::from_i32(i).unwrap()
+    }
+}
+
+impl Into<Vec2> for &Dir2 {
+    fn into(self) -> Vec2 {
+        match self {
+            Dir2::Left => Vec2::X * -1.,
+            Dir2::Right => Vec2::X,
+            Dir2::Up => Vec2::Y,
+            Dir2::Down => Vec2::Y * -1.,
+        }
+    }
+}
+impl Into<Vec2> for Dir2 {
+    fn into(self) -> Vec2 {
+        (&self).into()
+    }
+}
+
+impl Into<IVec2> for &Dir2 {
+    fn into(self) -> IVec2 {
+        match self {
+            Dir2::Left => IVec2::X * -1,
+            Dir2::Right => IVec2::X,
+            Dir2::Up => IVec2::Y,
+            Dir2::Down => IVec2::Y * -1,
+        }
+    }
+}
+impl Into<IVec2> for Dir2 {
+    fn into(self) -> IVec2 {
+        (&self).into()
     }
 }
 

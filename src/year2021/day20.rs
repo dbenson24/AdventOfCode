@@ -1,8 +1,8 @@
 use crate::utils::*;
 use hashbrown::{HashMap, HashSet};
+use image::ImageBuffer;
 use itertools::Itertools;
 use rayon::iter::*;
-use image::ImageBuffer;
 
 pub struct InfiniteImage {
     pub pxs: HashMap<IVec2, u8>,
@@ -139,19 +139,18 @@ pub fn day20() {
         let image_height = 500;
         let px_per_node = 2;
         let offset = (image_width as i32 / 2) / 2 + 75;
-        
+
         let mut write_image = |pic: &InfiniteImage| {
             let img = ImageBuffer::from_fn(
                 image_width * px_per_node,
                 image_height * px_per_node,
                 |x, y| {
-                    let pos = IVec2::new((x / px_per_node) as i32 - offset, (y / px_per_node) as i32 - offset);
+                    let pos = IVec2::new(
+                        (x / px_per_node) as i32 - offset,
+                        (y / px_per_node) as i32 - offset,
+                    );
                     let color = *pic.pxs.get(&pos).unwrap_or(&0);
-                    let brightness = if color == 0 {
-                        255u8
-                    } else {
-                        0u8
-                    };
+                    let brightness = if color == 0 { 255u8 } else { 0u8 };
                     image::Luma([brightness])
                 },
             );

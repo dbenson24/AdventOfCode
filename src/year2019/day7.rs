@@ -9,25 +9,14 @@ use super::intcode::IntcodeMachine;
 
 fn run_circuit(machine: &IntcodeMachine, inputs: &[i64]) -> i64 {
     let mut signal = 0;
-    let (tx_0, mut rx_prev) = mpsc::channel();
-    let (tx_n, rx_n) = mpsc::channel();
-    let mut chans = vec![];
-    for _i in 0..(inputs.len() - 2) {
-        chans.push(mpsc::channel());
-    }
 
-    let mut linked_chans = vec![];
-    linked_chans.push((rx_n, tx_0));
-    for (tx, rx) in chans {
-        linked_chans.push((rx_prev, tx));
-        rx_prev = rx;
-    }
-    linked_chans.push((rx_prev, tx_n));
+    let linked_chans = IntcodeMachine::looped_channels(inputs.len());
+
     for i in 0..inputs.len() {
         let chan_i = if i == 0 { inputs.len() - 1 } else { i - 1 };
-        linked_chans[chan_i].1.send(inputs[i]).unwrap();
+        linked_chans[chan_i].1.send(Some(inputs[i])).unwrap();
     }
-    linked_chans[linked_chans.len() - 1].1.send(0);
+    linked_chans[linked_chans.len() - 1].1.send(Some(0));
 
     let machines: Vec<_> = linked_chans
         .into_par_iter()
