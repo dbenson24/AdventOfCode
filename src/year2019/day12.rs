@@ -2,7 +2,7 @@ use crate::utils::*;
 use hashbrown::{HashSet, HashMap};
 use itertools::Itertools;
 
-fn gcd(x: i32, y: i32) -> i32 {
+fn gcd(x: usize, y: usize) -> usize {
     let mut x = x;
     let mut y = y;
     while y != 0 {
@@ -13,11 +13,11 @@ fn gcd(x: i32, y: i32) -> i32 {
     x
 }
 
-fn lcm(a: i32, b: i32) -> i32 {
+fn lcm(a: usize, b: usize) -> usize {
     a * b / gcd(a, b)
 }
 
-fn lcm3(a: i32, b: i32, c: i32) -> i32 {
+fn lcm3(a: usize, b: usize, c: usize) -> usize {
     lcm(a, lcm(b, c))
 }
 
@@ -37,20 +37,16 @@ pub fn day12() {
     ];
 
     let mut vels = [IVec3::ZERO; 4];
-    /*
     let mut x_states = HashMap::new();
     let mut y_states = HashMap::new();
     let mut z_states = HashMap::new();
 
-    let mut x_period: Option<(i32, i32)> = None;
-    let mut y_period: Option<(i32, i32)> = None;
-    let mut z_period: Option<(i32, i32)> = None;
-*/
-    let origin = (moons, vels);
+    let mut x_period = None;
+    let mut y_period = None;
+    let mut z_period = None;
 
     let mut i = 0usize;
     loop {
-        /*
         if x_period.is_none() {
             let x_state = moons.iter().zip(vels.iter()).map(|(pos, vel)| (pos.x, vel.x)).collect_vec();
             if let Some(start) = x_states.insert(x_state, i) {
@@ -75,7 +71,6 @@ pub fn day12() {
         if x_period.is_some() && y_period.is_some() && z_period.is_some() {
             break;
         }
-        */
 
         for (i, vel) in vels.iter_mut().enumerate() {
             let curr_pos = moons[i];
@@ -91,13 +86,6 @@ pub fn day12() {
         }
 
         i += 1;
-
-        if origin == (moons, vels) {
-            break;
-        }
-        if i % 10000000 == 0 {
-            dbg!(i);
-        }
     }
     dbg!(i);
     let energy = |x: &IVec3| {
@@ -105,11 +93,11 @@ pub fn day12() {
         x.x + x.y + x.z
     };
     let e: i32 = moons.iter().zip(vels.iter()).map(|(pos, vel)| energy(pos) * energy(vel)).sum();
-    // let x_period = x_period.unwrap();
-    // let y_period = y_period.unwrap();
-    // let z_period = z_period.unwrap();
-    // dbg!(x_period, y_period, z_period);
+    let x_period = x_period.unwrap();
+    let y_period = y_period.unwrap();
+    let z_period = z_period.unwrap();
+    dbg!(x_period, y_period, z_period);
 
-    //dbg!(lcm3(x_period.1, y_period.1, z_period.1));
+    dbg!(lcm3(x_period.1, y_period.1, z_period.1));
     dbg!(e);
 }
