@@ -1,5 +1,5 @@
 use crate::utils::*;
-use hashbrown::{HashSet, HashMap};
+use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
 
 fn gcd(x: usize, y: usize) -> usize {
@@ -20,7 +20,6 @@ fn lcm(a: usize, b: usize) -> usize {
 fn lcm3(a: usize, b: usize, c: usize) -> usize {
     lcm(a, lcm(b, c))
 }
-
 
 pub fn day12() {
     let mut test_moons = [
@@ -48,33 +47,45 @@ pub fn day12() {
     let mut i = 0usize;
     loop {
         if x_period.is_none() {
-            let x_state = moons.iter().zip(vels.iter()).map(|(pos, vel)| (pos.x, vel.x)).collect_vec();
+            let x_state = moons
+                .iter()
+                .zip(vels.iter())
+                .map(|(pos, vel)| (pos.x, vel.x))
+                .collect_vec();
             if let Some(start) = x_states.insert(x_state, i) {
                 x_period = Some((start, i - start));
             }
         }
 
         if y_period.is_none() {
-            let y_state = moons.iter().zip(vels.iter()).map(|(pos, vel)| (pos.y, vel.y)).collect_vec();
+            let y_state = moons
+                .iter()
+                .zip(vels.iter())
+                .map(|(pos, vel)| (pos.y, vel.y))
+                .collect_vec();
             if let Some(start) = y_states.insert(y_state, i) {
                 y_period = Some((start, i - start));
             }
         }
 
         if z_period.is_none() {
-            let z_state = moons.iter().zip(vels.iter()).map(|(pos, vel)| (pos.z, vel.z)).collect_vec();
+            let z_state = moons
+                .iter()
+                .zip(vels.iter())
+                .map(|(pos, vel)| (pos.z, vel.z))
+                .collect_vec();
             if let Some(start) = z_states.insert(z_state, i) {
                 z_period = Some((start, i - start));
             }
         }
-        
+
         if x_period.is_some() && y_period.is_some() && z_period.is_some() {
             break;
         }
 
         for (i, vel) in vels.iter_mut().enumerate() {
             let curr_pos = moons[i];
-            for (j, &pos) in moons.iter().enumerate() { 
+            for (j, &pos) in moons.iter().enumerate() {
                 if j != i {
                     let gravity = (pos - curr_pos).signum();
                     *vel = *vel + gravity;
@@ -92,7 +103,11 @@ pub fn day12() {
         let x = x.abs();
         x.x + x.y + x.z
     };
-    let e: i32 = moons.iter().zip(vels.iter()).map(|(pos, vel)| energy(pos) * energy(vel)).sum();
+    let e: i32 = moons
+        .iter()
+        .zip(vels.iter())
+        .map(|(pos, vel)| energy(pos) * energy(vel))
+        .sum();
     let x_period = x_period.unwrap();
     let y_period = y_period.unwrap();
     let z_period = z_period.unwrap();

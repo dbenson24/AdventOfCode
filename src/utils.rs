@@ -84,8 +84,8 @@ pub struct World<T> {
     pub world: HashMap<IVec2, T>,
 }
 
-impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World<T> {
-    pub fn from_file(path: &str) -> Option<Self> {
+impl<T> World<T> {
+    pub fn from_file(path: &str, parse_fn: &dyn Fn(&str) -> T) -> Option<Self> {
         if let Ok(lines) = read_lines(path) {
             let mut world = HashMap::new();
             for (y, line) in lines.enumerate() {
@@ -93,7 +93,7 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
                     for (x, height) in contents
                         .split("")
                         .filter(|s| s.len() > 0)
-                        .map(|s| s.parse::<T>().unwrap_or_default())
+                        .map(parse_fn)
                         .enumerate()
                     {
                         let pos = IVec2::new(x as i32, y as i32);
@@ -107,7 +107,7 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
         }
     }
 
-    pub fn pretty_print(&self) {
+    pub fn pretty_print(&self, str_fn: &impl Fn(&T) -> String) {
         let max_y = self.max_y();
         let max_x = self.max_x();
         let min_x = self.min_x().min(0);
@@ -117,9 +117,9 @@ impl<T: std::fmt::Debug + std::str::FromStr + Default + std::fmt::Display> World
             for x in min_x..=max_x {
                 let pos = IVec2::new(x, y);
                 if let Some(val) = self.world.get(&pos) {
-                    row.push(val.to_string().pad_to_width(5));
+                    row.push(str_fn(val));
                 } else {
-                    row.push(" ".to_string().pad_to_width(5));
+                    row.push(" ".to_string());
                 }
             }
             println!("{}", row.iter().join(""));

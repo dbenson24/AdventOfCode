@@ -53,7 +53,9 @@ pub fn ridged_noise() {
 }
 
 pub fn day_15() {
-    if let Some(mut map) = World::<usize>::from_file("./src/year2021/data/day15input.txt") {
+    if let Some(mut map) = World::<usize>::from_file("./src/year2021/data/day15input.txt", &|s| {
+        s.parse().unwrap()
+    }) {
         let max_x = map.max_x() + 1;
         let max_y = map.max_y() + 1;
         let points: Vec<_> = map.world.iter().map(|(&x, &y)| (x, y)).collect();
