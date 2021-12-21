@@ -44,6 +44,26 @@ pub fn order_conversions<'a>(
     ordered.push(curr);
 }
 
+pub fn step_inventory<'a>(
+    inventory: &mut HashMap<&'a str, i64>,
+    recipes: &'a HashMap<String, (i64, Vec<(String, i64)>)>,
+    conversion_order: &'a Vec<&'a str>,
+    step_amt: i64
+) {
+    for &item in conversion_order {
+        let mut curr_amt = *inventory.get(item).unwrap_or(&0);
+        if let Some((amt, inputs)) = recipes.get(item) {
+            while curr_amt > 0 {
+                curr_amt -= *amt * step_amt;
+                for (input, quant) in inputs {
+                    upsert(inventory, input, *quant * step_amt);
+                }
+            }
+            inventory.insert(item, curr_amt);
+        }
+    }
+}
+
 pub fn day14() {
     if let Ok(lines) = read_lines("./src/year2019/data/day14input.txt") {
         // Consumes the iterator, returns an (Optional) String
@@ -81,25 +101,37 @@ pub fn day14() {
 
         let mut inventory = HashMap::new();
 
-        let mut i = 0;
+        upsert(&mut inventory, "FUEL", 1i64);
+        step_inventory(&mut inventory, &recipes, &conversion_order, 1);
+
+        let max_ore_per_fuel = inventory["ORE"];
+        dbg!(max_ore_per_fuel);
+
+        const MAX_ORE: i64 = 1000000000000;
+        dbg!(MAX_ORE / max_ore_per_fuel);
+
+        let mut inventory = HashMap::new();
+
+        let mut step_amt = 25000;
+        let mut i = 0i64;
         loop {
-            upsert(&mut inventory, "FUEL", 1i64);
-            for &item in &conversion_order {
-                let mut curr_amt = *inventory.get(item).unwrap_or(&0);
-                if let Some((amt, inputs)) = recipes.get(item) {
-                    while curr_amt > 0 {
-                        curr_amt -= *amt;
-                        for (input, quant) in inputs {
-                            upsert(&mut inventory, input, *quant);
-                        }
-                    }
-                    inventory.insert(item, curr_amt);
-                }
-            }
-            if inventory["ORE"] > 1000000000000i64 {
+            upsert(&mut inventory, "FUEL", step_amt);
+            step_inventory(&mut inventory, &recipes, &conversion_order, step_amt);
+            let curr_ore = inventory["ORE"];
+
+            if curr_ore > MAX_ORE {
                 break;
             }
-            i += 1;
+            i += step_amt;
+            step_amt = if curr_ore + (100 * max_ore_per_fuel) > MAX_ORE {
+                1
+            } else if curr_ore + (1000 * max_ore_per_fuel) > MAX_ORE {
+                10
+            } else if curr_ore + (10000 * max_ore_per_fuel) > MAX_ORE {
+                100
+            } else {
+                1000
+            }
         }
         dbg!(i);
 
