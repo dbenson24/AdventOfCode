@@ -1,3 +1,5 @@
+#![allow(unused_must_use, unused_imports, unused_mut, dead_code)]
+
 use std::time::Instant;
 
 mod year2021;
@@ -11,7 +13,7 @@ fn main() {
     let days = 256;
     //year2021::day6::calc_fish_buckets(days);
     let now = Instant::now();
-    year2019::day12::day12();
+    year2019::day14::day14();
     let elapsed = now.elapsed();
     println!("{} ms", elapsed.as_millis());
     //year2021::day6::calc_fish_recurse(days);
