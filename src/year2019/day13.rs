@@ -19,13 +19,7 @@ pub enum Tile {
 #[test]
 pub fn base() {
     let numbers = IntcodeMachine::parse_file("./src/year2019/data/day13input.txt").unwrap();
-    let mut robot = IntcodeMachine::new(numbers);
-    let (game_input, rx) = channel();
-    let (tx, game_output) = channel();
-    spawn(move || {
-        robot.run(&rx, &tx);
-        tx.send(None);
-    });
+    let (game_input, game_output) = IntcodeMachine::spawn(numbers);
 
     let mut world: World<Tile> = World {
         world: HashMap::new(),

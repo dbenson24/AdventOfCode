@@ -48,7 +48,7 @@ pub fn step_inventory<'a>(
     inventory: &mut HashMap<&'a str, i64>,
     recipes: &'a HashMap<String, (i64, Vec<(String, i64)>)>,
     conversion_order: &'a Vec<&'a str>,
-    step_amt: i64
+    step_amt: i64,
 ) {
     for &item in conversion_order {
         let mut curr_amt = *inventory.get(item).unwrap_or(&0);

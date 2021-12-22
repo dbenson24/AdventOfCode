@@ -1,6 +1,7 @@
 use crate::utils::*;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
+use rayon::spawn;
 use std::{
     error, fmt,
     fmt::Error,
@@ -71,6 +72,17 @@ impl IntcodeMachine {
         linked_chans.push((rx_prev, tx_n));
 
         linked_chans
+    }
+
+    pub fn spawn(numbers: Vec<i64>) -> (Sender<Option<i64>>, Receiver<Option<i64>>) {
+        let mut robot = IntcodeMachine::new(numbers);
+        let (game_input, rx) = channel();
+        let (tx, game_output) = channel();
+        spawn(move || {
+            robot.run(&rx, &tx);
+            tx.send(None);
+        });
+        (game_input, game_output)
     }
 
     pub fn run(&mut self, input: &Receiver<Option<i64>>, output: &Sender<Option<i64>>) {
