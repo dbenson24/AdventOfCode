@@ -113,8 +113,8 @@ impl AABB {
         self.min.x >= self.max.x || self.min.y >= self.max.y || self.min.z >= self.max.z
     }
 
-    pub fn split_aabb(&self, overlap: &AABB) -> Vec<AABB> {
-        let mut split = vec![];
+    pub fn split_aabb(&self, overlap: &AABB) -> SmallVec<[AABB; 20]> {
+        let mut split = SmallVec::new();
         let x_pts = [self.min.x, overlap.min.x, overlap.max.x, self.max.x];
         let y_pts = [self.min.y, overlap.min.y, overlap.max.y, self.max.y];
         let z_pts = [self.min.z, overlap.min.z, overlap.max.z, self.max.z];
@@ -211,7 +211,7 @@ pub fn day22_part2() {
                         if enabled {
                             active_boxes.push((true, overlap));
                             let mut to_add = aabb.split_aabb(&overlap);
-                            to_add.retain(|x| x.overlap(&on_aabb).is_none());
+                            //to_add.retain(|x| x.overlap(&on_aabb).is_none());
 
                             for x in to_add {
                                 active_boxes.push((true, x));

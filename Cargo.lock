@@ -20,6 +20,7 @@ dependencies = [
  "rustc-hash",
  "serde",
  "serde_json",
+ "smallvec",
 ]
 
 [[package]]
@@ -947,6 +948,12 @@ dependencies = [
  "freetype-sys",
  "pkg-config",
 ]
+
+[[package]]
+name = "smallvec"
+version = "1.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1ecab6c735a6bb4139c0caafd0cc3635748bbb3acf4550e8138122099251f309"
 
 [[package]]
 name = "syn"
