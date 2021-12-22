@@ -187,26 +187,27 @@ pub fn day22_part2() {
         let mut enabled_boxes = vec![];
         let mut next_enabled = vec![];
 
-        let mut i = 0;
+        let mut region = 0;
         for (enabled, aabb) in regions {
             let mut active_boxes = vec![(enabled, aabb)];
             while let Some((enabled, aabb)) = active_boxes.pop() {
                 let mut box_ok = true;
-                enabled_boxes.retain(|on_aabb: &AABB| {
+                let mut i = 0;
+                while i < enabled_boxes.len() {
+                    let on_aabb = enabled_boxes[i];
                     if enabled && aabb.contains(&on_aabb) {
-                        return false;
-                    }
-                    if !box_ok {
-                        return true;
+                        enabled_boxes.swap_remove(i);
+                        continue;
                     }
 
                     if enabled && on_aabb.contains(&aabb) {
                         box_ok = false;
-                        return true;
+                        //enabled_boxes.swap_remove(i);
+                        break;
                     }
 
                     if let Some(overlap) = on_aabb.overlap(&aabb) {
-                        let mut still_on = on_aabb.split_aabb(&overlap);
+                        enabled_boxes.swap_remove(i);
                         if enabled {
                             active_boxes.push((true, overlap));
                             let mut to_add = aabb.split_aabb(&overlap);
@@ -217,27 +218,32 @@ pub fn day22_part2() {
                             }
                             box_ok = false;
                         }
+                        
+                        let mut still_on = on_aabb.split_aabb(&overlap);
                         for x in still_on {
                             active_boxes.push((true, x));
                         }
-                        false
+                        if !box_ok {
+                            break;
+                        }
+                        
                     } else {
-                        true
+                        i += 1;
                     }
-                });
+                }
                 if enabled && box_ok {
                     enabled_boxes.push(aabb);
                 }
             }
-            i += 1;
+            region += 1;
             //dbg!(enabled_boxes.len(), next_enabled.len());
 
             enabled_boxes.append(&mut next_enabled);
 
-            dbg!(i, enabled_boxes.len());
+            //dbg!(region, enabled_boxes.len());
         }
         dbg!(enabled_boxes.len());
-
+        /* 
         let mut overlap_vol = 0;
         // purely to double check there's no overlapping boxes
         for (i, a) in enabled_boxes.iter().enumerate() {
@@ -250,10 +256,11 @@ pub fn day22_part2() {
                 }
             }
         }
+        */
 
         let volume: i64 = enabled_boxes.iter().map(AABB::volume).sum();
         dbg!(volume);
-        dbg!(overlap_vol);
+        // dbg!(overlap_vol);
 
         //let mut itersects = vec![];
     }
