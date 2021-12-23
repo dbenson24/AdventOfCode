@@ -11,12 +11,8 @@ pub struct Amphipod {
 }
 
 impl Amphipod {
-    pub fn skip_space(&self, pos: IVec2) -> bool {
-        if pos.x.abs() == 1 || pos.x.abs() == 3 {
-            pos.x == self.stopx
-        } else {
-            false
-        }
+    pub fn skip_space(&self) -> bool {
+        self.pos.x.abs() == 1 || self.pos.x.abs() == 3
     }
 
     pub fn new(char: &str, x: i32, y: i32) -> Amphipod {
@@ -69,17 +65,42 @@ impl State {
     pub fn blocked(&self, pos: IVec2) -> bool {
         self.pods.iter().any(|pod| pod.pos == pos)
             || pos.y == 0 && pos.x.abs() > 5
-            || pos.y > 1
+            || pos.y > 0
             || (pos.y < 0 && !(pos.x.abs() == 1 || pos.x.abs() == 3))
             || pos.y < -2
     }
 
+    pub fn invalid(&self, pod: &Amphipod) -> bool {
+        if pod.pos.y < 0 {
+            for other in &self.pods {
+                if other.pos.y < 0 && other.pos.x == pod.pos.x && other.cost != pod.cost {
+                    //dbg!(&other, &pod);
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
     pub fn move_pod(&self, pod_i: usize, dir: Dir2) -> Option<(i32, State)> {
         let pod = self.pods[pod_i];
-        let mut dist = -1;
-        let mut dst: IVec2 = pod.pos;
-        dbg!(pod.pos);
-
+        let offset: IVec2 = dir.into();
+        let dest = pod.pos + offset;
+        if !self.blocked(dest) {
+            let mut copy = self.clone();
+            copy.pods[pod_i].pos = dest;
+            copy.last = if dest.y == 0 { Some(pod_i) } else { None };
+            //dbg!(pod.pos, dst, dist);
+            if copy.invalid(&copy.pods[pod_i]) {
+                None
+            } else {
+                //dbg!(dest);
+                Some((pod.cost, copy))
+            }
+        } else {
+            None
+        }
+        /* 
         match dir {
             Dir2::Up => None,
             Dir2::Down => None,
@@ -114,6 +135,7 @@ impl State {
                 }
             }
         }
+        */
     }
 
     pub fn moves(&self) -> Vec<(i32, State)> {
@@ -135,11 +157,49 @@ impl State {
                 }
             }
 
-            if let Some(state) = self.move_pod(i, Dir2::Left) {
-                moves.push(state);
+            if let Some(mut state) = self.move_pod(i, Dir2::Left) {
+                if state.1.pods[i].skip_space() {
+                    if let Some(mut state_2) = state.1.move_pod(i, Dir2::Left) {
+                        state_2.0 += state.0;
+                        moves.push(state_2);
+                    }
+                    if let Some(mut state_2) = state.1.move_pod(i, Dir2::Down) {
+                        state_2.0 += state.0;
+                        moves.push(state_2);
+                    }
+                } else {
+                    moves.push(state);
+                }
             }
-
-            if let Some(state) = self.move_pod(i, Dir2::Right) {
+            if let Some(mut state) = self.move_pod(i, Dir2::Right) {
+                if state.1.pods[i].skip_space() {
+                    if let Some(mut state_2) = state.1.move_pod(i, Dir2::Right) {
+                        state_2.0 += state.0;
+                        moves.push(state_2);
+                    }
+                    if let Some(mut state_2) = state.1.move_pod(i, Dir2::Down) {
+                        state_2.0 += state.0;
+                        moves.push(state_2);
+                    }
+                } else {
+                    moves.push(state);
+                }
+            }
+            if let Some(mut state) = self.move_pod(i, Dir2::Up) {
+                if state.1.pods[i].skip_space() {
+                    if let Some(mut state_2) = state.1.move_pod(i, Dir2::Left) {
+                        state_2.0 += state.0;
+                        moves.push(state_2);
+                    }
+                    if let Some(mut state_2) = state.1.move_pod(i, Dir2::Right) {
+                        state_2.0 += state.0;
+                        moves.push(state_2);
+                    }
+                } else {
+                    moves.push(state);
+                }
+            }
+            if let Some(mut state) = self.move_pod(i, Dir2::Down) {
                 moves.push(state);
             }
         }
@@ -147,8 +207,7 @@ impl State {
     }
 }
 
-#[test]
-pub fn day_23() {
+pub fn day23() {
     let mut state = State {
         pods: vec![
             Amphipod::new("B", -3, -1),
@@ -180,14 +239,16 @@ pub fn find_path(state: &mut State) {
             completed.insert(pos.state.clone());
 
             visit_num += 1;
-            dbg!(visit_num);
+            if visit_num % 100 == 0{
+                dbg!(visit_num, pos.weight);
+            }
 
             if pos.state.done() {
                 cost = pos.weight;
                 break;
             }
             for (w, s) in pos.state.moves() {
-                heap.push(WeightedPos::new(w, s));
+                heap.push(WeightedPos::new(w + pos.weight, s));
             }
         }
     }
