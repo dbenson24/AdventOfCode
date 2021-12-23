@@ -218,7 +218,7 @@ pub fn day22_part2() {
                             }
                             box_ok = false;
                         }
-                        
+
                         let mut still_on = on_aabb.split_aabb(&overlap);
                         for x in still_on {
                             active_boxes.push((true, x));
@@ -226,7 +226,6 @@ pub fn day22_part2() {
                         if !box_ok {
                             break;
                         }
-                        
                     } else {
                         i += 1;
                     }
@@ -243,7 +242,7 @@ pub fn day22_part2() {
             //dbg!(region, enabled_boxes.len());
         }
         dbg!(enabled_boxes.len());
-        /* 
+        /*
         let mut overlap_vol = 0;
         // purely to double check there's no overlapping boxes
         for (i, a) in enabled_boxes.iter().enumerate() {
