@@ -113,7 +113,7 @@ impl<T> World<T> {
         let max_x = self.max_x();
         let min_x = self.min_x().min(0);
         let min_y = self.min_y().min(0);
-        for y in min_y..=max_y {
+        for y in (min_y..=max_y).rev() {
             let mut row = vec![];
             for x in min_x..=max_x {
                 let pos = IVec2::new(x, y);
