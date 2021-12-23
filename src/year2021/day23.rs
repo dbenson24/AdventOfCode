@@ -12,6 +12,117 @@ pub struct Amphipod {
     pub frozen: bool,
 }
 
+// const POSITIONS: [IVec2; 27] = [
+//     IVec2::new(
+//         -5,
+//         0,
+//     ),
+//     IVec2::new(
+//         -4,
+//         0,
+//     ),
+//     IVec2::new(
+//         -3,
+//         0,
+//     ),
+//     IVec2::new(
+//         -2,
+//         0,
+//     ),
+//     IVec2::new(
+//         -1,
+//         0,
+//     ),
+//     IVec2::new(
+//         0,
+//         0,
+//     ),
+//     IVec2::new(
+//         1,
+//         0,
+//     ),
+//     IVec2::new(
+//         2,
+//         0,
+//     ),
+//     IVec2::new(
+//         3,
+//         0,
+//     ),
+//     IVec2::new(
+//         4,
+//         0,
+//     ),
+//     IVec2::new(
+//         5,
+//         0,
+//     ),
+//     IVec2::new(
+//         -3,
+//         -4,
+//     ),
+//     IVec2::new(
+//         -3,
+//         -3,
+//     ),
+//     IVec2::new(
+//         -3,
+//         -2,
+//     ),
+//     IVec2::new(
+//         -3,
+//         -1,
+//     ),
+//     IVec2::new(
+//         -1,
+//         -4,
+//     ),
+//     IVec2::new(
+//         -1,
+//         -3,
+//     ),
+//     IVec2::new(
+//         -1,
+//         -2,
+//     ),
+//     IVec2::new(
+//         -1,
+//         -1,
+//     ),
+//     IVec2::new(
+//         1,
+//         -4,
+//     ),
+//     IVec2::new(
+//         1,
+//         -3,
+//     ),
+//     IVec2::new(
+//         1,
+//         -2,
+//     ),
+//     IVec2::new(
+//         1,
+//         -1,
+//     ),
+//     IVec2::new(
+//         3,
+//         -4,
+//     ),
+//     IVec2::new(
+//         3,
+//         -3,
+//     ),
+//     IVec2::new(
+//         3,
+//         -2,
+//     ),
+//     IVec2::new(
+//         3,
+//         -1,
+//     ),
+// ];
+
 impl Amphipod {
     pub fn skip_space(&self) -> bool {
         self.pos.y == 0 && (self.pos.x.abs() == 1 || self.pos.x.abs() == 3)
@@ -320,6 +431,23 @@ impl State {
 }
 
 pub fn day23_example() {
+    let mut pos = vec![];
+    for x in -5..=5 {
+        pos.push(IVec2::new(x, 0));
+    }
+    for x in [-3, -1, 1, 3] {
+        for y in -4..=-1 {
+            pos.push(IVec2::new(x, y));
+        }
+    }
+    dbg!(pos);
+
+
+
+    return;
+
+
+
     let mut state = State {
         pods: vec![
             Amphipod::new("B", -3, -1),
@@ -351,13 +479,21 @@ pub fn day23() {
     let mut state = State {
         pods: vec![
             Amphipod::new("B", -3, -1),
-            Amphipod::new("B", -3, -2),
+            Amphipod::new("D", -3, -2),
+            Amphipod::new("D", -3, -3),
+            Amphipod::new("B", -3, -4),
             Amphipod::new("C", -1, -1),
             Amphipod::new("C", -1, -2),
+            Amphipod::new("B", -1, -3),
+            Amphipod::new("C", -1, -4),
             Amphipod::new("A", 1, -1),
-            Amphipod::new("D", 1, -2),
+            Amphipod::new("B", 1, -2),
+            Amphipod::new("A", 1, -3),
+            Amphipod::new("D", 1, -4),
             Amphipod::new("D", 3, -1),
             Amphipod::new("A", 3, -2),
+            Amphipod::new("C", 3, -3),
+            Amphipod::new("A", 3, -4),
         ],
         last: None,
     };
