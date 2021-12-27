@@ -86,7 +86,10 @@ pub struct World<T> {
 }
 
 impl<T> World<T> {
-    pub fn from_file(path: &str, parse_fn: &dyn Fn(&str) -> T) -> Option<Self> {
+    pub fn from_file<U: Into<Option<T>>>(
+        path: &str,
+        parse_fn: &impl Fn(&str) -> U,
+    ) -> Option<Self> {
         if let Ok(lines) = read_lines(path) {
             let mut world = HashMap::new();
             for (y, line) in lines.enumerate() {
@@ -95,7 +98,13 @@ impl<T> World<T> {
                         .split("")
                         .filter(|s| s.len() > 0)
                         .map(parse_fn)
+                        .map(|x| {
+                            let x: Option<T> = x.into();
+                            x
+                        })
                         .enumerate()
+                        .filter(|(i, x)| x.is_some())
+                        .map(|(i, x)| (i, x.unwrap()))
                     {
                         let pos = IVec2::new(x as i32, y as i32);
                         world.insert(pos, height);
@@ -108,22 +117,38 @@ impl<T> World<T> {
         }
     }
 
-    pub fn pretty_print(&self, str_fn: &impl Fn(&T) -> String) {
+    pub fn pretty_print(&self, str_fn: &impl Fn(&T) -> String, rev_y: bool) {
         let max_y = self.max_y();
         let max_x = self.max_x();
         let min_x = self.min_x().min(0);
         let min_y = self.min_y().min(0);
-        for y in (min_y..=max_y).rev() {
-            let mut row = vec![];
-            for x in min_x..=max_x {
-                let pos = IVec2::new(x, y);
-                if let Some(val) = self.world.get(&pos) {
-                    row.push(str_fn(val));
-                } else {
-                    row.push(" ".to_string());
+
+        if rev_y {
+            for y in (min_y..=max_y).rev() {
+                let mut row = vec![];
+                for x in min_x..=max_x {
+                    let pos = IVec2::new(x, y);
+                    if let Some(val) = self.world.get(&pos) {
+                        row.push(str_fn(val));
+                    } else {
+                        row.push(" ".to_string());
+                    }
                 }
+                println!("{}", row.iter().join(""));
             }
-            println!("{}", row.iter().join(""));
+        } else {
+            for y in min_y..=max_y {
+                let mut row = vec![];
+                for x in min_x..=max_x {
+                    let pos = IVec2::new(x, y);
+                    if let Some(val) = self.world.get(&pos) {
+                        row.push(str_fn(val));
+                    } else {
+                        row.push(" ".to_string());
+                    }
+                }
+                println!("{}", row.iter().join(""));
+            }
         }
     }
 
@@ -142,7 +167,7 @@ impl<T> World<T> {
     }
 }
 
-pub fn pretty_print_set(set: &HashSet<IVec2>, str_fn: &Fn(&IVec2) -> String, width: usize) {
+pub fn pretty_print_set(set: &HashSet<IVec2>, str_fn: &impl Fn(&IVec2) -> String, width: usize) {
     let max_y = set.iter().map(|pos| pos.y).max().unwrap();
     let max_x = set.iter().map(|pos| pos.x).max().unwrap();
     let min_x = set.iter().map(|pos| pos.x).min().unwrap();

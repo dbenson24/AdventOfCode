@@ -137,7 +137,13 @@ impl Amphipod {
             "C" => (1, 100),
             _ => (3, 1000),
         };
-        Amphipod { pos, stopx, cost, startx, frozen: false }
+        Amphipod {
+            pos,
+            stopx,
+            cost,
+            startx,
+            frozen: false,
+        }
     }
 
     pub fn get_string(&self) -> String {
@@ -145,8 +151,9 @@ impl Amphipod {
             1 => "A",
             10 => "B",
             100 => "C",
-            _ => "D"
-        }.to_string();
+            _ => "D",
+        }
+        .to_string();
         if self.frozen {
             letter.to_ascii_lowercase()
         } else {
@@ -170,7 +177,11 @@ pub struct WeightedPos {
 
 impl WeightedPos {
     pub fn new(weight: i32, cost: i32, state: State) -> Self {
-        WeightedPos { weight, cost, state }
+        WeightedPos {
+            weight,
+            cost,
+            state,
+        }
     }
 }
 
@@ -224,16 +235,16 @@ impl State {
         if !self.blocked(dest) {
             let mut copy = self.clone();
             copy.pods[pod_i].pos = dest;
-            copy.last = if dest.y == 0 { 
+            copy.last = if dest.y == 0 {
                 copy.pods[pod_i].startx = -100;
                 for (i, pod) in copy.pods.iter_mut().enumerate() {
                     if i != pod_i && pod.pos.y == 0 {
                         pod.frozen = true;
                     }
                 }
-                Some(pod_i) 
-            } else { 
-                None 
+                Some(pod_i)
+            } else {
+                None
             };
             //dbg!(pod.pos, dst, dist);
             if copy.invalid(&copy.pods[pod_i]) {
@@ -247,7 +258,7 @@ impl State {
         } else {
             None
         }
-        /* 
+        /*
         match dir {
             Dir2::Up => None,
             Dir2::Down => None,
@@ -298,7 +309,7 @@ impl State {
                     continue;
                 }
             }
-            /* 
+            /*
             if let Some(last) = self.last {
                 if last != i && pod.pos.y == 0 {
                     continue;
@@ -306,15 +317,16 @@ impl State {
             }
             */
             if pod.frozen {
-                if self.pods.iter().filter(|x| x.pos.x == pod.stopx).all(|x| x.pos.x == x.stopx) {
+                if self
+                    .pods
+                    .iter()
+                    .filter(|x| x.pos.x == pod.stopx)
+                    .all(|x| x.pos.x == x.stopx)
+                {
                     let mut cost = 0;
                     let mut state = self.clone();
                     let diff = pod.stopx - pod.pos.x;
-                    let dir = if diff > 0 {
-                        Dir2::Right
-                    } else {
-                        Dir2::Left
-                    };
+                    let dir = if diff > 0 { Dir2::Right } else { Dir2::Left };
                     while let Some(next_state) = state.move_pod(i, dir) {
                         cost += next_state.0;
                         state = next_state.1;
@@ -387,23 +399,26 @@ impl State {
     }
 
     pub fn calc_min_cost(&self) -> i32 {
-        self.pods.iter().map(|p| {
-            if p.stopx == p.pos.x {
-                return p.cost * (2 - p.pos.y)
-            }
-            let mut cost = p.cost * 2;
-            if p.pos.y < 0 {
-                cost += p.pos.y.abs() * p.cost;
-            }
-            let diff = p.startx - p.pos.x;
-            cost += diff.abs() * p.cost;
-            cost
-        }).sum()
+        self.pods
+            .iter()
+            .map(|p| {
+                if p.stopx == p.pos.x {
+                    return p.cost * (2 - p.pos.y);
+                }
+                let mut cost = p.cost * 2;
+                if p.pos.y < 0 {
+                    cost += p.pos.y.abs() * p.cost;
+                }
+                let diff = p.startx - p.pos.x;
+                cost += diff.abs() * p.cost;
+                cost
+            })
+            .sum()
     }
 
     pub fn pretty_print(&self) {
         let mut world = World {
-            world: HashMap::new()
+            world: HashMap::new(),
         };
 
         for pod in &self.pods {
@@ -424,9 +439,7 @@ impl State {
             dbg!(self.pods[i]);
         }
         println!("======");
-        world.pretty_print(&|x| {
-            x.clone()
-        });
+        world.pretty_print(&|x| x.clone(), true);
     }
 }
 
@@ -442,11 +455,7 @@ pub fn day23_example() {
     }
     dbg!(pos);
 
-
-
     return;
-
-
 
     let mut state = State {
         pods: vec![
@@ -517,7 +526,7 @@ pub fn find_path(state: &mut State) {
             completed.insert(pos.state.clone());
 
             visit_num += 1;
-            if visit_num % 50000 == 0{
+            if visit_num % 50000 == 0 {
                 pos.state.pretty_print();
                 dbg!(visit_num, pos.cost);
             }

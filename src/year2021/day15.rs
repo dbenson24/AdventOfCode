@@ -54,7 +54,8 @@ pub fn ridged_noise() {
 
 pub fn day_15() {
     if let Some(mut map) = World::<usize>::from_file("./src/year2021/data/day15input.txt", &|s| {
-        s.parse().unwrap()
+        let x: usize = s.parse().unwrap();
+        x
     }) {
         let max_x = map.max_x() + 1;
         let max_y = map.max_y() + 1;
