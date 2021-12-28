@@ -3,18 +3,9 @@ use core::cmp::Ordering;
 use hashbrown::{HashMap, HashSet};
 use std::collections::BinaryHeap;
 use std::num::Wrapping;
+use rayon::iter::*;
 
-pub fn test_digit(digit: i64, z: i64) -> i64 {
-    let x = z % 26;
-    let x = x + 14;
-    let x = x == digit;
-    let x = (x == false) as i64;
-    let y = (25 * x) + 1;
-    let z = z * y;
-    let y = digit + 12;
-    let y = y * x;
-    z + y
-}
+
 pub fn test_digit_with_params(digit: i64, z: i64, z_div: i64, x_add: i64, y_add: i64) -> i64 {
     let x = z % 26;
     let z = z / z_div;
@@ -41,56 +32,71 @@ pub fn test_ith_digit(digit: i64, z: i64, i: usize) -> i64 {
     test_digit_with_params(digit, z, z_div, x_add, y_add)
 }
 
-// z only has 26 values
-//
-pub fn test_digit_2(digit: i64, z: i64) -> i64 {
-    let x = (z % 26) + 14;
-
-    let y = if x != digit {
-        26
-    } else {
-        dbg!(digit, z);
-        1
-    };
-    let z = Wrapping(z) * Wrapping(y);
-
-    if x != digit {
-        z.0 + digit + 12
-    } else {
-        z.0
-    }
-}
-
-pub fn test_digit_3(digit: i64, z: i64) -> i64 {
-    let x = (z % 26) + 14;
-    let z = z * 26;
-    z + digit + 12
-}
-
 #[test]
 pub fn test_fns() {
     for dig in 1..=9 {
         for z in 0..1000 {
-            assert_eq!(test_digit(dig, z), run_original(dig, z));
-            assert_eq!(test_digit(dig, z), test_digit_2(dig, z));
-            assert_eq!(test_digit(dig, z), test_digit_3(dig, z));
+            assert_eq!(test_digit_first_input(dig, z), run_original(dig, z));
         }
     }
 }
 
-#[test]
-pub fn test_num() {
-    let num = [1, 3, 4, 7, 9, 2, 4, 6, 8, 9, 9, 9, 9, 9];
-    let mut z = 0;
-    for x in num {
-        z = test_digit_2(x, z)
+pub fn find_highest_passing() {
+    //let z = test_ith_digit(1, 0, 0);
+    let x = test_z(0, 0);
+    dbg!(x);
+}
+
+pub fn test_z(i: usize, z: i64) -> Option<i64> {
+    if i < 3 {
+        println!("{}{}", format!("{:width$}", "", width=i), i);
     }
-    dbg!(z);
-    let mut z = 0;
-    for x in num {
-        z = run_original(x, z)
+    const DIGITS: [i64; 9] = [1,2,3,4,5,6,7,8,9];
+    if i == 4 || i == 5 {
+        let x: Vec<_> = DIGITS.into_par_iter().fold(|| None, |mut acc: Option<i64>, digit| {
+            if acc.is_some() {
+                return acc;
+            }
+    
+            let next_z = test_ith_digit(digit, z, i);
+            if i == 13 {
+                if next_z == 0 {
+                    return Some(digit);
+                }
+            } else {
+                if let Some(num) = test_z(i + 1, next_z) {
+                    let val = 10i64.pow(13 - i as u32) * digit;
+                    return Some(num + val)
+                }
+            }
+            None
+        }).collect();
+        for y in x {
+            if y.is_some() {
+                return y
+            }
+        }
+        None
+    } else {
+        (1..=9).fold(None, |mut acc, digit| {
+            if acc.is_some() {
+                return acc;
+            }
+    
+            let next_z = test_ith_digit(digit, z, i);
+            if i == 13 {
+                if next_z == 0 {
+                    return Some(digit);
+                }
+            } else {
+                if let Some(num) = test_z(i + 1, next_z) {
+                    let val = 10i64.pow(13 - i as u32) * digit;
+                    return Some(num + val)
+                }
+            }
+            None
+        })
     }
-    dbg!(z);
 }
 
 pub fn run_original(digit: i64, z: i64) -> i64 {
@@ -227,7 +233,6 @@ pub fn base() {
                 //dbg!(&memory);
             }
         }
-        dbg!(test_digit(input[0], z));
         dbg!(memory);
         let mut test_z = 0;
         for (i, &digit) in input.iter().enumerate() {
@@ -235,4 +240,16 @@ pub fn base() {
         }
         dbg!(test_z);
     }
+}
+
+pub fn test_digit_first_input(digit: i64, z: i64) -> i64 {
+    let x = z % 26;
+    let x = x + 14;
+    let x = x == digit;
+    let x = (x == false) as i64;
+    let y = (25 * x) + 1;
+    let z = z * y;
+    let y = digit + 12;
+    let y = y * x;
+    z + y
 }
