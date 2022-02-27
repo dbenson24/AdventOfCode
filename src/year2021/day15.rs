@@ -4,30 +4,10 @@ use hashbrown::{HashMap, HashSet};
 use image::ImageBuffer;
 use noise::{NoiseFn, Perlin, RidgedMulti};
 use std::collections::BinaryHeap;
+use std::fmt::Debug;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct WeightedPos {
-    pub weight: usize,
-    pub pos: IVec2,
-}
-
-impl WeightedPos {
-    pub fn new(weight: usize, pos: IVec2) -> Self {
-        WeightedPos { weight, pos }
-    }
-}
-
-impl Ord for WeightedPos {
-    fn cmp(&self, other: &Self) -> Ordering {
-        other.weight.cmp(&self.weight)
-    }
-}
-
-impl PartialOrd for WeightedPos {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
+#[derive(Debug, PartialEq, Eq)]
+pub struct Empty();
 
 pub fn ridged_noise() {
     let ridged = RidgedMulti::new();
@@ -80,9 +60,9 @@ pub fn day_15() {
 
 pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
     let mut completed = HashSet::new();
-    let mut heap: BinaryHeap<WeightedPos> = BinaryHeap::new();
+    let mut heap: BinaryHeap<MinWeight<IVec2>> = BinaryHeap::new();
     let mut distances = HashMap::new();
-    heap.push(WeightedPos::new(0, IVec2::new(0, 0)));
+    heap.push(MinWeight::new(0, IVec2::new(0, 0)));
     for pos in map.world.keys() {
         distances.insert(*pos, usize::MAX);
     }
@@ -136,39 +116,39 @@ pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
     };
 
     while let Some(pos) = heap.pop() {
-        if !completed.contains(&pos.pos) {
+        if !completed.contains(&pos.dat) {
             //dbg!(&pos.pos);
-            completed.insert(pos.pos);
-            let weight = distances[&pos.pos];
+            completed.insert(pos.dat);
+            let weight = distances[&pos.dat];
 
-            let diff = end - pos.pos;
+            let diff = end - pos.dat;
             let h = (diff.x.abs() + diff.y.abs()) as usize;
             if diagnostics {
-                visited_world.world.insert(pos.pos, visit_num);
-                weight_world.world.insert(pos.pos, weight);
-                heuristic_world.world.insert(pos.pos, h);
+                visited_world.world.insert(pos.dat, visit_num);
+                weight_world.world.insert(pos.dat, weight);
+                heuristic_world.world.insert(pos.dat, h);
             }
 
             visit_num += 1;
 
-            if pos.pos == end {
+            if pos.dat == end {
                 break;
             }
-            for neighbor in get_cardinal_neighbors(pos.pos) {
+            for neighbor in get_cardinal_neighbors(pos.dat) {
                 if let Some(&neighbor_weight) = map.world.get(&neighbor) {
                     let new_weight = neighbor_weight + weight;
                     if new_weight < distances[&neighbor] {
                         let diff = end - neighbor;
                         let h = cost_scale * (diff.x.abs() + diff.y.abs()) as usize;
                         distances.insert(neighbor, new_weight);
-                        heap.push(WeightedPos::new(new_weight + h, neighbor));
+                        heap.push(MinWeight::new(new_weight + h, neighbor));
                     }
                 }
             }
 
             nodes_in_frame += 1;
             if nodes_in_frame == nodes_per_frame {
-                write_frame(&distances);
+                // write_frame(&distances);
                 nodes_in_frame = 0;
             }
         }
@@ -179,4 +159,17 @@ pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
     dbg!(heap.len());
     dbg!(completed.len());
     dbg!(distances[&end]);
+
+    dbg!(map.min_cost_4(
+        &mut 0,
+        IVec2::ZERO,
+        |x, _, _| x == end,
+        |pos, map, _| {
+            if let Some(x) = map.world.get(&pos) {
+                Some(*x)
+            } else {
+                None
+            }
+        }
+    ));
 }

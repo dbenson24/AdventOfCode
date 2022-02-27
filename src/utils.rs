@@ -5,7 +5,11 @@ use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::*;
 use pad::PadStr;
 pub use smallvec::{smallvec, SmallVec};
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
+use std::fmt::Debug;
 use std::fs::File;
+use std::hash::Hash;
 use std::io::{self, BufRead};
 use std::path::Path;
 
@@ -117,7 +121,7 @@ impl<T> World<T> {
         }
     }
 
-    pub fn pretty_print(&self, str_fn: &impl Fn(&T) -> String, rev_y: bool) {
+    pub fn pretty_print(&self, str_fn: &impl Fn(&T, IVec2) -> String, rev_y: bool) {
         let max_y = self.max_y();
         let max_x = self.max_x();
         let min_x = self.min_x().min(0);
@@ -129,7 +133,7 @@ impl<T> World<T> {
                 for x in min_x..=max_x {
                     let pos = IVec2::new(x, y);
                     if let Some(val) = self.world.get(&pos) {
-                        row.push(str_fn(val));
+                        row.push(str_fn(val, pos));
                     } else {
                         row.push(" ".to_string());
                     }
@@ -142,7 +146,7 @@ impl<T> World<T> {
                 for x in min_x..=max_x {
                     let pos = IVec2::new(x, y);
                     if let Some(val) = self.world.get(&pos) {
-                        row.push(str_fn(val));
+                        row.push(str_fn(val, pos));
                     } else {
                         row.push(" ".to_string());
                     }
@@ -164,6 +168,62 @@ impl<T> World<T> {
     }
     pub fn min_y(&self) -> i32 {
         self.world.keys().map(|pos| pos.y).min().unwrap()
+    }
+
+    pub fn min_cost_4<S>(
+        &mut self,
+        state: &mut S,
+        start: IVec2,
+        done: impl Fn(IVec2, &mut Self, &mut S) -> bool,
+        get_weight: impl Fn(IVec2, &mut Self, &mut S) -> Option<usize>,
+    ) -> Option<usize> {
+        djikstra(
+            start,
+            0,
+            &mut (self, state),
+            |&pos, _, (world, extra_state)| done(pos, world, extra_state),
+            |pos, _, (world, extra_state)| {
+                let x: SmallVec<[_; 4]> = get_cardinal_neighbors(*pos)
+                    .iter()
+                    .map(|x| {
+                        if let Some(w) = get_weight(*x, world, extra_state) {
+                            Some((*x, w))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                x
+            },
+        )
+    }
+
+    pub fn min_path_4<S>(
+        &mut self,
+        extra_state: &mut S,
+        start: IVec2,
+        done: impl Fn(IVec2, &mut Self, &mut S) -> bool,
+        get_weight: impl Fn(IVec2, &mut Self, &mut S) -> Option<usize>,
+    ) -> Option<(usize, Vec<IVec2>)> {
+        djikstra_path(
+            start,
+            0,
+            &mut (self, extra_state),
+            |&pos, _, (state, extra_state)| done(pos, state, extra_state),
+            |pos, _, (state, extra_state)| {
+                let x: SmallVec<[_; 4]> = get_cardinal_neighbors(*pos)
+                    .iter()
+                    .map(|x| {
+                        if let Some(w) = get_weight(*x, state, extra_state) {
+                            Some((*x, w))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                x
+            },
+        )
     }
 }
 
@@ -285,6 +345,189 @@ impl Into<IVec2> for Dir2 {
     fn into(self) -> IVec2 {
         (&self).into()
     }
+}
+
+impl Into<Dir2> for &IVec2 {
+    fn into(self) -> Dir2 {
+        if self.x > 0 {
+            return Dir2::Right;
+        }
+        if self.x < 0 {
+            return Dir2::Left;
+        }
+        if self.y > 0 {
+            return Dir2::Up;
+        }
+        return Dir2::Down;
+    }
+}
+impl Into<Dir2> for IVec2 {
+    fn into(self) -> Dir2 {
+        (&self).into()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct MinWeight<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    pub weight: usize,
+    pub dat: T,
+}
+
+impl<T> MinWeight<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    pub fn new(weight: usize, dat: T) -> Self {
+        MinWeight { weight, dat }
+    }
+}
+
+impl<T> Ord for MinWeight<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.weight.cmp(&self.weight)
+    }
+}
+
+impl<T> PartialOrd for MinWeight<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+pub fn djikstra<T, N, S>(
+    start: T,
+    start_weight: usize,
+    state: &mut S,
+    mut done: impl FnMut(&T, usize, &mut S) -> bool,
+    mut get_neighbors: impl FnMut(&T, usize, &mut S) -> N,
+) -> Option<usize>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+    N: IntoIterator<Item = Option<(T, usize)>>,
+{
+    let mut completed = HashSet::new();
+    let mut heap: BinaryHeap<MinWeight<T>> = BinaryHeap::new();
+    let mut distances = HashMap::new();
+
+    distances.insert(start.clone(), start_weight);
+    heap.push(MinWeight::new(start_weight, start));
+
+    while let Some(pos) = heap.pop() {
+        if !completed.contains(&pos.dat) {
+            completed.insert(pos.dat.clone());
+            let weight = distances[&pos.dat];
+
+            if done(&pos.dat, pos.weight, state) {
+                return Some(pos.weight);
+            }
+
+            for neigh in get_neighbors(&pos.dat, pos.weight, state) {
+                if let Some((neighbor, neighbor_weight)) = neigh {
+                    let new_weight = neighbor_weight + weight;
+                    if new_weight < *distances.get(&neighbor).unwrap_or(&usize::MAX) {
+                        distances.insert(neighbor.clone(), new_weight);
+                        heap.push(MinWeight::new(new_weight, neighbor));
+                    }
+                }
+            }
+        }
+    }
+    None
+}
+
+#[derive(Debug, Clone)]
+pub struct PathHolder<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    path: Vec<T>,
+    val: T,
+}
+
+impl<T> Hash for PathHolder<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.val.hash(state);
+    }
+}
+
+impl<T> PartialEq for PathHolder<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.val == other.val
+    }
+}
+
+impl<T> Eq for PathHolder<T>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+{
+    fn assert_receiver_is_total_eq(&self) {}
+}
+
+pub fn djikstra_path<T, N, S>(
+    start: T,
+    start_weight: usize,
+    state: &mut S,
+    mut done: impl FnMut(&T, usize, &mut S) -> bool,
+    mut get_neighbors: impl FnMut(&T, usize, &mut S) -> N,
+) -> Option<(usize, Vec<T>)>
+where
+    T: Debug + PartialEq + Eq + Hash + Clone,
+    N: IntoIterator<Item = Option<(T, usize)>>,
+{
+    let mut res = None;
+    djikstra(
+        PathHolder {
+            path: vec![],
+            val: start,
+        },
+        start_weight,
+        state,
+        |val, w, state| {
+            if done(&val.val, w, state) {
+                res = Some((w, val.path.clone()));
+                true
+            } else {
+                false
+            }
+        },
+        |val, weight, state| {
+            let mut new_path = val.path.clone();
+            new_path.push(val.val.clone());
+
+            get_neighbors(&val.val, weight, state)
+                .into_iter()
+                .map(move |n| {
+                    if let Some((n, w)) = n {
+                        Some((
+                            (PathHolder {
+                                path: new_path.clone(),
+                                val: n,
+                            }),
+                            w,
+                        ))
+                    } else {
+                        None
+                    }
+                })
+        },
+    );
+
+    res
 }
 
 #[test]

@@ -13,7 +13,7 @@ fn main() {
     let days = 256;
     //year2021::day6::calc_fish_buckets(days);
     let now = Instant::now();
-    year2021::day24::find_highest_passing();
+    year2019::day15::day_15();
     let elapsed = now.elapsed();
     println!("{} ms", elapsed.as_millis());
     //year2021::day6::calc_fish_recurse(days);

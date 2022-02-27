@@ -1,10 +1,9 @@
 use crate::utils::*;
 use core::cmp::Ordering;
 use hashbrown::{HashMap, HashSet};
+use rayon::iter::*;
 use std::collections::BinaryHeap;
 use std::num::Wrapping;
-use rayon::iter::*;
-
 
 pub fn test_digit_with_params(digit: i64, z: i64, z_div: i64, x_add: i64, y_add: i64) -> i64 {
     let x = z % 26;
@@ -49,31 +48,37 @@ pub fn find_highest_passing() {
 
 pub fn test_z(i: usize, z: i64) -> Option<i64> {
     if i < 3 {
-        println!("{}{}", format!("{:width$}", "", width=i), i);
+        println!("{}{}", format!("{:width$}", "", width = i), i);
     }
-    const DIGITS: [i64; 9] = [1,2,3,4,5,6,7,8,9];
+    const DIGITS: [i64; 9] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     if i == 4 || i == 5 {
-        let x: Vec<_> = DIGITS.into_par_iter().fold(|| None, |mut acc: Option<i64>, digit| {
-            if acc.is_some() {
-                return acc;
-            }
-    
-            let next_z = test_ith_digit(digit, z, i);
-            if i == 13 {
-                if next_z == 0 {
-                    return Some(digit);
-                }
-            } else {
-                if let Some(num) = test_z(i + 1, next_z) {
-                    let val = 10i64.pow(13 - i as u32) * digit;
-                    return Some(num + val)
-                }
-            }
-            None
-        }).collect();
+        let x: Vec<_> = DIGITS
+            .into_par_iter()
+            .fold(
+                || None,
+                |mut acc: Option<i64>, digit| {
+                    if acc.is_some() {
+                        return acc;
+                    }
+
+                    let next_z = test_ith_digit(digit, z, i);
+                    if i == 13 {
+                        if next_z == 0 {
+                            return Some(digit);
+                        }
+                    } else {
+                        if let Some(num) = test_z(i + 1, next_z) {
+                            let val = 10i64.pow(13 - i as u32) * digit;
+                            return Some(num + val);
+                        }
+                    }
+                    None
+                },
+            )
+            .collect();
         for y in x {
             if y.is_some() {
-                return y
+                return y;
             }
         }
         None
@@ -82,7 +87,7 @@ pub fn test_z(i: usize, z: i64) -> Option<i64> {
             if acc.is_some() {
                 return acc;
             }
-    
+
             let next_z = test_ith_digit(digit, z, i);
             if i == 13 {
                 if next_z == 0 {
@@ -91,7 +96,7 @@ pub fn test_z(i: usize, z: i64) -> Option<i64> {
             } else {
                 if let Some(num) = test_z(i + 1, next_z) {
                     let val = 10i64.pow(13 - i as u32) * digit;
-                    return Some(num + val)
+                    return Some(num + val);
                 }
             }
             None

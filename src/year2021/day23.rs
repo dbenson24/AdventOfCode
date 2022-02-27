@@ -439,7 +439,7 @@ impl State {
             dbg!(self.pods[i]);
         }
         println!("======");
-        world.pretty_print(&|x| x.clone(), true);
+        world.pretty_print(&|x, _| x.clone(), true);
     }
 }
 
