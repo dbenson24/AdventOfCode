@@ -46,7 +46,7 @@ impl FromStr for Packet {
             let byte = u8::from_str_radix(&bytes.0, 16).unwrap();
             bytes.1.push(byte << 4);
         }
-        let (i, (packet, packet_size)) =
+        let (_i, (packet, _packet_size)) =
             bits::<_, _, Error<(&[u8], usize)>, Error<&[u8]>, _>(parse_packet)(&bytes.1).unwrap();
 
         Ok(packet)
@@ -85,7 +85,7 @@ impl PacketContent {
 pub fn day_16() {
     if let Ok(lines) = read_lines("./src/year2021/data/day16input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 dbg!(eval_packet(&contents));
             }

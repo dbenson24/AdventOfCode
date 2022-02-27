@@ -83,7 +83,7 @@ pub fn day_15() {
                 },
             );
 
-            if let Some((cost, path)) = res {
+            if let Some((_cost, path)) = res {
                 if path.len() > 1 {
                     for pos in &path {
                         if *pos == **curr_pos || *pos == next_pos {
@@ -143,14 +143,14 @@ pub fn day_15() {
 
             false
         },
-        |pos, world, state| {
+        |pos, world, _state| {
             world.min_cost_4(
                 &mut 0,
                 IVec2::ZERO,
                 |y, _, _| y == pos,
                 |p, w, _| {
                     if let Some(tile) = w.world.get(&p) {
-                        if (tile == &Tile::Wall) {
+                        if tile == &Tile::Wall {
                             return None;
                         } else {
                             Some(1)
@@ -175,7 +175,7 @@ pub fn day_15() {
         |y, _, _| y == oxygen_start,
         |p, w, _| {
             if let Some(tile) = w.world.get(&p) {
-                if (tile == &Tile::Wall) {
+                if tile == &Tile::Wall {
                     return None;
                 } else {
                     Some(1)

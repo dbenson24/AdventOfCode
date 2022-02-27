@@ -35,7 +35,7 @@ pub fn eval_int_code(numbers: &mut Vec<usize>) -> usize {
 pub fn run_opcodes() {
     if let Ok(lines) = read_lines("./src/year2019/data/day2input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             let mut numbers: Vec<usize> = line
                 .unwrap()
                 .split(",")

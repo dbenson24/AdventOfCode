@@ -9,7 +9,7 @@ pub fn calc_fish_iter(days: usize) {
     if let Ok(lines) = read_lines("./src/year2021/data/day6input.txt") {
         // Consumes the iterator, returns an (Optional) String
         let mut fish: Vec<i32> = vec![];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 contents
                     .split(",")
@@ -19,7 +19,7 @@ pub fn calc_fish_iter(days: usize) {
         }
 
         let start = Instant::now();
-        for day_num in 1..=days {
+        for _day_num in 1..=days {
             let now = Instant::now();
             let new_fish: i32 = fish
                 .par_iter_mut()
@@ -35,7 +35,7 @@ pub fn calc_fish_iter(days: usize) {
                 .sum();
             let time_summing = now.elapsed().as_millis();
             fish.resize_with(fish.len() + (new_fish as usize), || 8);
-            let time_resizing = now.elapsed().as_millis() - time_summing;
+            let _time_resizing = now.elapsed().as_millis() - time_summing;
             //dbg!(&fish);
             //dbg!(day_num, time_summing, time_resizing, fish.len());
         }
@@ -83,7 +83,7 @@ pub fn calc_fish_recurse(days: usize) {
         // Consumes the iterator, returns an (Optional) String
         let mut fish: Vec<i32> = vec![];
 
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 contents
                     .split(",")
@@ -108,7 +108,7 @@ pub fn calc_fish_buckets(days: usize) {
     if let Ok(lines) = read_lines("./src/year2021/data/day6input.txt") {
         // Consumes the iterator, returns an (Optional) String
         let mut fish = [0 as i64; 9];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 contents
                     .split(",")
@@ -117,14 +117,14 @@ pub fn calc_fish_buckets(days: usize) {
             }
         }
 
-        for day_num in 1..=days {
+        for _day_num in 1..=days {
             let new_fish = fish[0];
             for i in 0..(fish.len() - 1) {
                 fish[i] = fish[i + 1];
             }
             fish[6] += new_fish;
             fish[8] = new_fish;
-            let fish_count = fish.iter().sum::<i64>();
+            let _fish_count = fish.iter().sum::<i64>();
             //dbg!(day_num, fish_count);
             //dbg!(&fish);
             //debug_plotter::plot!(fish_count);

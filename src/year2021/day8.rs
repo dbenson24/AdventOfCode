@@ -117,7 +117,7 @@ pub fn day_8() {
         // Consumes the iterator, returns an (Optional) String
         let mut counts = [0; 10];
         let mut sum = 0;
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let input: Vec<_> = contents.split(" | ").collect();
                 let signals: Vec<_> = input[0].split(" ").collect();

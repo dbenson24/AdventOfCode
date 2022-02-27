@@ -12,7 +12,7 @@ pub fn day_14_part_1() {
         let mut first_line = true;
         let mut mapping: FxHashMap<(u8, u8), u8> = FxHashMap::default();
         let mut bytes = vec![];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 if first_line {
                     first_line = false;
@@ -109,7 +109,7 @@ pub fn day_14_part_2() {
         let mut first_line = true;
         let mut mapping: FxHashMap<(u8, u8), u8> = FxHashMap::default();
         let mut bytes = vec![];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 if first_line {
                     first_line = false;

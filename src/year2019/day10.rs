@@ -49,7 +49,7 @@ pub fn base() {
             .max_by(|x, y| x.1.len().cmp(&y.1.len()))
             .unwrap();
         dbg!(max.0, max.1.len());
-        let asteroid = max.0.as_vec2();
+        let _asteroid = max.0.as_vec2();
         let mut asteroids_to_destroy: Vec<_> = max
             .1
             .iter()
@@ -72,6 +72,6 @@ pub fn base() {
         asteroids_to_destroy.sort_by(|x, y| x.0.partial_cmp(&y.0).unwrap());
         //dbg!(&asteroids_to_destroy[0..20]);
         dbg!(asteroids_to_destroy[199]);
-        let station = *max.0;
+        let _station = *max.0;
     }
 }

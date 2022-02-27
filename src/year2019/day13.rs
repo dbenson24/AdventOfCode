@@ -30,7 +30,7 @@ pub fn base() {
         let tile = game_output.recv().unwrap().unwrap();
         (IVec2::new(x as i32, y as i32), tile)
     };
-    let print_tiles = |tile: &Tile| {
+    let _print_tiles = |tile: &Tile| {
         match tile {
             &Tile::Ball => "O",
             &Tile::Block => "X",

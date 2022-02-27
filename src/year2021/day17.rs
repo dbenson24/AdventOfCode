@@ -56,7 +56,7 @@ pub fn part_1() {
 pub fn base() {
     if let Ok(lines) = read_lines("./src/year2021/data/day17input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let split: Vec<_> = contents
                     .split(", ")

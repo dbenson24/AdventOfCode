@@ -4,7 +4,7 @@ use crate::utils::*;
 pub fn day7_part1() {
     if let Ok(lines) = read_lines("./src/year2021/data/day7input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let positions: Vec<i32> = contents.split(",").map(|s| s.parse().unwrap()).collect();
 
@@ -23,7 +23,7 @@ pub fn day7_part1() {
 pub fn day7_part2() {
     if let Ok(lines) = read_lines("./src/year2021/data/day7input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let positions: Vec<i32> = contents.split(",").map(|s| s.parse().unwrap()).collect();
 

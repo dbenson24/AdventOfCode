@@ -21,7 +21,7 @@ pub fn decode_layers(data: &str, width: usize, height: usize) -> Vec<Vec<i32>> {
 pub fn base() {
     if let Ok(lines) = read_lines("./src/year2019/data/day8input.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 const WIDTH: usize = 25;
                 const HEIGHT: usize = 6;

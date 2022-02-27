@@ -10,7 +10,7 @@ mod year2019;
 use utils::*;
 
 fn main() {
-    let days = 256;
+    let _days = 256;
     //year2021::day6::calc_fish_buckets(days);
     let now = Instant::now();
     year2019::day15::day_15();

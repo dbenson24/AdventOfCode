@@ -518,7 +518,7 @@ pub fn find_path(state: &mut State) {
     heap.push(WeightedPos::new(0, 0, state.clone()));
 
     let mut visit_num = 0;
-    let diagnostics = false;
+    let _diagnostics = false;
     let mut cost = 0;
 
     while let Some(pos) = heap.pop() {

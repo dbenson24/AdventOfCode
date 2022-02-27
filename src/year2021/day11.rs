@@ -6,12 +6,12 @@ pub fn flash_octopuses(world: &mut World<i32>) -> i32 {
     world
         .world
         .iter_mut()
-        .for_each(|(pos, octopus)| *octopus += 1);
+        .for_each(|(_pos, octopus)| *octopus += 1);
 
     let mut stack: Vec<_> = world
         .world
         .iter()
-        .filter(|(&pos, &octopus)| octopus >= 9)
+        .filter(|(&_pos, &octopus)| octopus >= 9)
         .map(|x| *x.0)
         .collect();
     let mut flashes = 0;

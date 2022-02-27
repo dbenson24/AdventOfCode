@@ -70,7 +70,7 @@ pub fn day14() {
 
         let mut recipes = HashMap::new();
         let mut dependents: HashMap<String, HashSet<String>> = HashMap::new();
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let mut iter = contents.split(" => ");
                 let inputs = iter.next().unwrap();

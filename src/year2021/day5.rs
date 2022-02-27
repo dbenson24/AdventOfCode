@@ -7,9 +7,9 @@ pub fn count_intersections() {
     if let Ok(lines) = read_lines("./src/year2021/data/day5input.txt") {
         let mut world: VecWorld<bool> = VecWorld::new();
         let mut intersections: HashSet<IVec2> = HashSet::new();
-        let skip_diagonal = true;
+        let _skip_diagonal = true;
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let points: Vec<_> = contents
                     .split(" -> ")

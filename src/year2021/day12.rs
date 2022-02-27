@@ -10,7 +10,7 @@ pub fn day_12_part_1() {
     if let Ok(lines) = read_lines("./src/year2021/data/day12testinput.txt") {
         let mut edges: HashMap<String, Vec<String>> = HashMap::new();
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let edge: Vec<_> = contents.split("-").collect();
                 if let Some(vec) = edges.get_mut(edge[0]) {
@@ -60,7 +60,7 @@ pub fn day_12_part_2() {
     if let Ok(lines) = read_lines("./src/year2021/data/day12testinput.txt") {
         let mut edges: HashMap<String, Vec<String>> = HashMap::new();
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let edge: Vec<_> = contents.split("-").collect();
                 if let Some(vec) = edges.get_mut(edge[0]) {

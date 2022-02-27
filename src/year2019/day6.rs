@@ -8,7 +8,7 @@ pub fn count_edges() {
         // Consumes the iterator, returns an (Optional) String
 
         let mut map: BTreeMap<String, String> = BTreeMap::new();
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let objects: Vec<String> = contents.split(")").map(|s| s.to_owned()).collect();
                 map.insert(objects[1].clone(), objects[0].clone());
@@ -33,7 +33,7 @@ pub fn find_parent() {
         // Consumes the iterator, returns an (Optional) String
 
         let mut map: BTreeMap<String, String> = BTreeMap::new();
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let objects: Vec<String> = contents.split(")").map(|s| s.to_owned()).collect();
                 map.insert(objects[1].clone(), objects[0].clone());
@@ -41,7 +41,7 @@ pub fn find_parent() {
         }
         let mut you_parents = BTreeSet::<&String>::new();
 
-        let mut connections = 0;
+        let mut _connections = 0;
 
         let mut parent = map.get("YOU");
         while let Some(p) = parent {

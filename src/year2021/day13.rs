@@ -40,7 +40,7 @@ pub fn day_13() {
 
         let mut paper = HashSet::new();
         let mut folds = vec![];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let pair: Vec<_> = contents.split(",").collect();
                 if pair.len() > 1 {

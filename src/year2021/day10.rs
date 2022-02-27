@@ -49,7 +49,7 @@ pub fn day_10_part_1() {
         let mut score = 0;
         let mut completion_scores = vec![];
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let (valid, failed_byte, completion_score) = is_valid_line(&contents);
                 if !valid {

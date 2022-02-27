@@ -13,7 +13,7 @@ pub fn day22_part1() {
     if let Ok(lines) = read_lines("./src/year2021/data/day22testinput.txt") {
         // Consumes the iterator, returns an (Optional) String
         let mut operations = vec![];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let mut iter = contents.split(" ");
                 let on = iter.next().unwrap();
@@ -154,7 +154,7 @@ pub fn day22_part2() {
     if let Ok(lines) = read_lines("./src/year2021/data/day22input.txt") {
         // Consumes the iterator, returns an (Optional) String
         let mut operations = vec![];
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let mut iter = contents.split(" ");
                 let on = iter.next().unwrap();

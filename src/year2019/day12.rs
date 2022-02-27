@@ -22,7 +22,7 @@ fn lcm3(a: usize, b: usize, c: usize) -> usize {
 }
 
 pub fn day12() {
-    let mut test_moons = [
+    let mut _test_moons = [
         IVec3::new(-1, 0, 2),
         IVec3::new(2, -10, -7),
         IVec3::new(4, -8, 8),

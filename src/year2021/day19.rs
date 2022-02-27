@@ -43,7 +43,7 @@ pub fn day_19() {
         // Consumes the iterator, returns an (Optional) String
         let mut scanners = vec![];
         let mut beacons = None;
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 if contents.contains("---") {
                     if let Some(b) = beacons {

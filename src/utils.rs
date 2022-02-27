@@ -107,7 +107,7 @@ impl<T> World<T> {
                             x
                         })
                         .enumerate()
-                        .filter(|(i, x)| x.is_some())
+                        .filter(|(_i, x)| x.is_some())
                         .map(|(i, x)| (i, x.unwrap()))
                     {
                         let pos = IVec2::new(x as i32, y as i32);
@@ -534,8 +534,8 @@ where
 pub fn base() {
     if let Ok(lines) = read_lines("./src/year2021/data/day1testinput.txt") {
         // Consumes the iterator, returns an (Optional) String
-        for (line_num, line) in lines.enumerate() {
-            if let Ok(contents) = line {}
+        for (_line_num, line) in lines.enumerate() {
+            if let Ok(_contents) = line {}
         }
     }
 }

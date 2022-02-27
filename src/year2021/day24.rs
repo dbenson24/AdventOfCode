@@ -111,7 +111,7 @@ pub fn run_original(digit: i64, z: i64) -> i64 {
         let mut curr_input = 0usize;
         // Consumes the iterator, returns an (Optional) String
         memory.insert("z".to_string(), z);
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let mut statement = contents.split(" ");
 
@@ -179,7 +179,7 @@ pub fn base() {
         let z = 0;
         let mut memory = HashMap::new();
         memory.insert("z".to_string(), z);
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             if let Ok(contents) = line {
                 let mut statement = contents.split(" ");
 

@@ -47,7 +47,7 @@ impl IntcodeMachine {
 
     pub fn parse_file(path: &str) -> Result<Vec<i64>, Box<dyn error::Error>> {
         let lines = read_lines(path)?;
-        for (line_num, line) in lines.enumerate() {
+        for (_line_num, line) in lines.enumerate() {
             let numbers: Vec<i64> = line?.split(",").map(|s| s.parse().unwrap()).collect();
             return Ok(numbers);
         }
