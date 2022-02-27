@@ -23,6 +23,15 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
+pub fn from_digits(digits: &[i64]) -> i64 {
+    let mut acc = 0;
+    for &d in digits {
+        acc *= 10;
+        acc += d;
+    }
+    acc
+}
+
 #[derive(Clone)]
 pub struct VecWorld<T: Default> {
     data: Vec<Vec<T>>,
