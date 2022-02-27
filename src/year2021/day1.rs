@@ -4,13 +4,13 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 #[derive(Default, Debug, Clone, Copy)]
-struct avg_sum {
+struct AvgSum {
     nums: [i32; 3],
     start: usize,
     len: usize,
 }
 
-impl avg_sum {
+impl AvgSum {
     pub fn add(&mut self, x: i32) {
         let i = (self.start + self.len) % 3;
         if self.len == 3 {
@@ -50,8 +50,8 @@ fn count_depths() {
     if let Ok(lines) = read_lines("./src/year2021/day1input.txt") {
         let mut count = 0;
 
-        let mut prev_sum: avg_sum = avg_sum::default();
-        let mut curr_sum: avg_sum = avg_sum::default();
+        let mut prev_sum: AvgSum = AvgSum::default();
+        let mut curr_sum: AvgSum = AvgSum::default();
         // Consumes the iterator, returns an (Optional) String
         for line in lines {
             if let Ok(num) = line {
