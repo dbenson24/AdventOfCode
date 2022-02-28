@@ -40,7 +40,7 @@ impl RangeSumTree {
         let mut levels = vec![vec![]; depth];
 
         for (idx, &sum) in vals.iter().enumerate() {
-            levels[0].push(RangeSum { idx, sum, len: 1 })
+            levels[0].push(RangeSum { sum })
         }
 
         for i in 1..depth {
@@ -49,9 +49,7 @@ impl RangeSumTree {
             let mut idx = 0;
             while idx < vals.len() {
                 let mut sum = RangeSum {
-                    idx,
                     sum: 0,
-                    len: range_len,
                 };
                 let left_child = idx / half_len;
                 let right_child = left_child + 1;
@@ -117,8 +115,6 @@ fn test_sums() {
 
 #[derive(Debug, Clone)]
 pub struct RangeSum {
-    pub idx: usize,
-    pub len: usize,
     pub sum: i64,
 }
 
@@ -258,7 +254,7 @@ pub fn day16_part1() {
 }
 
 pub fn day16_part2() {
-    if let Ok(lines) = read_lines("./src/year2019/data/day16testinput.txt") {
+    if let Ok(lines) = read_lines("./src/year2019/data/day16input.txt") {
         let mut nums = None;
 
         // Consumes the iterator, returns an (Optional) String
