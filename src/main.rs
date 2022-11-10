@@ -2,10 +2,11 @@
 
 use std::time::Instant;
 
+mod year2017;
+mod year2019;
 mod year2021;
 
 mod utils;
-mod year2019;
 
 use utils::*;
 

@@ -1,4 +1,10 @@
+use crate::utils::aocdata::{Part, TestCase};
+use crate::utils::puzzle::{PuzzleFns, SolvePuzzle};
 use crate::utils::read_lines;
+use anyhow::Result;
+use itertools::Itertools;
+use ringbuffer::{AllocRingBuffer, RingBuffer, RingBufferExt, RingBufferRead, RingBufferWrite};
+use std::collections::VecDeque;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -42,6 +48,65 @@ impl AvgSum {
         }
         return sum;
     }
+}
+
+pub struct Year2021Day1;
+
+impl SolvePuzzle for Year2021Day1 {
+    type Output = (i32, Option<i32>);
+
+    fn puzzle_year_day() -> (i32, u32) {
+        (2021, 1)
+    }
+
+    fn solve(input: &str) -> Result<Self::Output> {
+        Ok((count_lines(input)?, None))
+    }
+
+    fn test_cases() -> Vec<TestCase> {
+        vec![TestCase::new(
+            Part::A,
+            "199
+200
+208
+210
+200
+207
+240
+269
+260
+263",
+            7,
+        )]
+    }
+}
+
+#[test]
+pub fn submit_year_2021_day_1() -> Result<()> {
+    let tests = Year2021Day1::run_tests()?;
+    let res = Year2021Day1::try_submit()?;
+    eprintln!("{res:?}");
+    Ok(())
+}
+
+pub fn count_lines(input: &str) -> Result<i32> {
+    Ok(input
+        .lines()
+        .map(|x| x.parse::<i32>().unwrap())
+        .tuple_windows()
+        .filter(|(a, b)| b > a)
+        .count() as i32)
+}
+
+pub fn count_windows(input: &str) -> Result<i32> {
+    Ok(input
+        .lines()
+        .map(|x| x.parse::<i32>().unwrap())
+        .tuple_windows()
+        .map(|(a, b, c)| a + b + c)
+        .tuple_windows()
+        .filter(|(a, b)| b > a)
+        .count() as i32)
 }
 
 #[test]

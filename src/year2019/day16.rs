@@ -48,9 +48,7 @@ impl RangeSumTree {
             let half_len = range_len / 2;
             let mut idx = 0;
             while idx < vals.len() {
-                let mut sum = RangeSum {
-                    sum: 0,
-                };
+                let mut sum = RangeSum { sum: 0 };
                 let left_child = idx / half_len;
                 let right_child = left_child + 1;
                 if left_child < levels[i - 1].len() {
@@ -143,21 +141,21 @@ pub fn fft(input: &[i64]) -> Vec<i64> {
     next
 }
 
-pub fn fft_span(input: &[i64]) -> Vec<i64> {
+pub fn fft_span(input: &[i64], offset: usize) -> Vec<i64> {
     let mut next = input.to_owned();
     let tree = RangeSumTree::new(input);
     let pct = (input.len() / 8).max(1);
 
-    next.iter_mut().enumerate().rev().for_each(|(i, val)| {
+    next.par_iter_mut().enumerate().rev().for_each(|(i, val)| {
         if i % pct == 0 {
-            println!("{:?} / {:?}", i, input.len());
+            // println!("{:?} / {:?}", i, input.len());
         }
 
-        let pattern_size = i + 1;
+        let pattern_size = i + 1 + offset;
         let mut idx = 0;
         let mut sum = 0;
         while idx < input.len() {
-            let pat_idx = idx + 1;
+            let pat_idx = idx + 1 + offset;
             let pat_num = pat_idx / pattern_size;
             let pat_val = BASE[pat_num % 4];
             let curr_size = (pattern_size - (pat_idx % pattern_size)).min(input.len() - idx);
@@ -246,7 +244,7 @@ pub fn day16_part1() {
         let mut nums = nums.unwrap();
 
         for _ in 0..100 {
-            nums = fft_span(&nums);
+            nums = fft_span(&nums, 0);
         }
 
         println!("{:?}", &nums);
@@ -270,17 +268,27 @@ pub fn day16_part2() {
         }
         let mut single_nums = nums.unwrap();
 
-        let mut nums = repeat_slice(&single_nums, 10000);
+        let res_idx = from_digits(&single_nums[0..7]) as usize;
+        dbg!(res_idx);
+
+        let nums = repeat_slice(&single_nums, 10000);
+        dbg!(nums.len(), single_nums.len());
+        let mut nums = nums[res_idx..single_nums.len() * 10000].to_owned();
+        dbg!(nums.len());
 
         println!("starting fft");
 
         for i in 0..100 {
             println!("{}", i);
-            nums = fft_span(&nums);
+            //nums = fft_span(&nums, res_idx);
+            nums.iter_mut().rev().fold(0, |mut acc, x| {
+                acc += *x;
+                *x = acc % 10;
+                acc
+            });
             // println!("{:?}", &nums);
         }
         let i = from_digits(&nums[0..8]) as usize;
-        let val = from_digits(&nums[i..i + 8]);
-        dbg!(i, val);
+        dbg!(i);
     }
 }

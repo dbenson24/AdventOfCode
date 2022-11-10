@@ -11,9 +11,13 @@ codegen-units = 1
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.66"
+chrono = "0.4.22"
 debug_plotter = "0.2.1"
+dirs = "4.0.0"
 glam = "0.20.1"
 hashbrown = {version="0.11.2", features = ["rayon"]}
+html2text = "0.4.3"
 image = "0.23.14"
 itertools = "0.10.1"
 noise = "0.7.0"
@@ -22,8 +26,11 @@ num-derive = "0.3.3"
 num-traits = "0.2.14"
 pad = "0.1.6"
 rayon = "1.5.1"
+regex = "1.6.0"
+reqwest = { version = "0.11.12", features = ["blocking"] }
+ringbuffer = "0.10.0"
 rustc-hash = "1.1.0"
-serde = {version="1.0.131", features = ["derive"]}
+serde = { version = "1.0.131", features = ["derive"] }
 serde_json = "1.0.73"
 smallvec = {version="1.7.0", features = ["union"]}
 
