@@ -187,7 +187,7 @@ pub fn day22_part2() {
         let mut enabled_boxes = vec![];
         let mut next_enabled = vec![];
 
-        let mut region = 0;
+        let mut _region = 0;
         for (enabled, aabb) in regions {
             let mut active_boxes = vec![(enabled, aabb)];
             while let Some((enabled, aabb)) = active_boxes.pop() {
@@ -234,7 +234,7 @@ pub fn day22_part2() {
                     enabled_boxes.push(aabb);
                 }
             }
-            region += 1;
+            _region += 1;
             //dbg!(enabled_boxes.len(), next_enabled.len());
 
             enabled_boxes.append(&mut next_enabled);

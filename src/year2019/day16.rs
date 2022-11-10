@@ -39,7 +39,7 @@ impl RangeSumTree {
         let depth = (vals.len() as f64).log2().ceil() as usize;
         let mut levels = vec![vec![]; depth];
 
-        for (idx, &sum) in vals.iter().enumerate() {
+        for (_idx, &sum) in vals.iter().enumerate() {
             levels[0].push(RangeSum { sum })
         }
 
@@ -78,7 +78,7 @@ impl RangeSumTree {
         while i < start + len {
             let chunk_idx = i / span_size;
             let chunk_start = chunk_idx * span_size;
-            let chunk_end = chunk_start + span_size;
+            let _chunk_end = chunk_start + span_size;
             let chunk_len = (end - i).min(span_size);
 
             if chunk_start < i {
@@ -126,7 +126,7 @@ pub fn fft(input: &[i64]) -> Vec<i64> {
         let mut sum = 0;
         while idx < input.len() {
             let pat_idx = idx + 1;
-            let pat_num = (pat_idx / pattern_size);
+            let pat_num = pat_idx / pattern_size;
             let pat_val = BASE[pat_num % 4];
             if pat_val == 0 {
                 let skip = pattern_size - (pat_idx % pattern_size);

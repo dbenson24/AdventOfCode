@@ -66,11 +66,11 @@ fn to_ints(strs: &[&str]) -> Vec<i32> {
     strs.iter().map(|text| text.parse().unwrap()).collect()
 }
 
-trait get_bit {
+trait GetBit {
     fn get_bit(&self, i: usize, first_bit: usize) -> i32;
 }
 
-impl get_bit for i32 {
+impl GetBit for i32 {
     fn get_bit(&self, i: usize, first_bit: usize) -> i32 {
         let i = 31 - (first_bit + i);
         (*self & (1 << i)) >> i
@@ -83,7 +83,7 @@ fn calculate_oxy_and_co2() {
     if let Ok(lines) = read_lines("./src/year2021/data/day3input.txt") {
         let mut bit_count = 0;
         let mut totals: Vec<i32> = Vec::new();
-        let mut line_count = 0;
+        let mut _line_count = 0;
         let mut numbers = vec![];
 
         // Consumes the iterator, returns an (Optional) String
@@ -97,7 +97,7 @@ fn calculate_oxy_and_co2() {
                 let int = i32::from_str_radix(&contents, 2).unwrap();
                 numbers.push(int);
 
-                line_count += 1;
+                _line_count += 1;
             }
         }
 

@@ -457,31 +457,31 @@ pub fn day23_example() {
 
     return;
 
-    let mut state = State {
-        pods: vec![
-            Amphipod::new("B", -3, -1),
-            Amphipod::new("D", -3, -2),
-            Amphipod::new("D", -3, -3),
-            Amphipod::new("A", -3, -4),
-            Amphipod::new("C", -1, -1),
-            Amphipod::new("C", -1, -2),
-            Amphipod::new("B", -1, -3),
-            Amphipod::new("D", -1, -4),
-            Amphipod::new("B", 1, -1),
-            Amphipod::new("B", 1, -2),
-            Amphipod::new("A", 1, -3),
-            Amphipod::new("C", 1, -4),
-            Amphipod::new("D", 3, -1),
-            Amphipod::new("A", 3, -2),
-            Amphipod::new("C", 3, -3),
-            Amphipod::new("A", 3, -4),
-        ],
-        last: None,
-    };
+    // let mut state = State {
+    //     pods: vec![
+    //         Amphipod::new("B", -3, -1),
+    //         Amphipod::new("D", -3, -2),
+    //         Amphipod::new("D", -3, -3),
+    //         Amphipod::new("A", -3, -4),
+    //         Amphipod::new("C", -1, -1),
+    //         Amphipod::new("C", -1, -2),
+    //         Amphipod::new("B", -1, -3),
+    //         Amphipod::new("D", -1, -4),
+    //         Amphipod::new("B", 1, -1),
+    //         Amphipod::new("B", 1, -2),
+    //         Amphipod::new("A", 1, -3),
+    //         Amphipod::new("C", 1, -4),
+    //         Amphipod::new("D", 3, -1),
+    //         Amphipod::new("A", 3, -2),
+    //         Amphipod::new("C", 3, -3),
+    //         Amphipod::new("A", 3, -4),
+    //     ],
+    //     last: None,
+    // };
 
-    state.pretty_print();
+    // state.pretty_print();
 
-    find_path(&mut state);
+    // find_path(&mut state);
 }
 
 pub fn day23() {

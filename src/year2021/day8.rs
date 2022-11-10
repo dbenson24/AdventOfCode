@@ -42,7 +42,7 @@ impl FromStr for SIG {
 
 type Segments = [bool; 7];
 
-static mappings: [&str; 10] = [
+static MAPPINGS: [&str; 10] = [
     "abcefg", "cf", "acdeg", "acdfg", "bcdf", "abdfg", "abdefg", "acf", "abcdefg", "abcdfg",
 ];
 
@@ -96,7 +96,7 @@ impl DigitSet {
 }
 
 pub fn map_signals(signals: &Vec<&str>) -> DigitSet {
-    let correct = DigitSet::new(&mappings);
+    let correct = DigitSet::new(&MAPPINGS);
     let new = DigitSet::new(&signals);
 
     let mapping = (0..7 as usize)

@@ -5,7 +5,6 @@ use reqwest::blocking::Client;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE, COOKIE};
 use reqwest::redirect::Policy;
 use std::convert::{TryFrom, TryInto};
-use std::env::home_dir;
 use std::fs::{self, read_to_string, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};

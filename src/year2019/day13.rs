@@ -40,22 +40,22 @@ pub fn base() {
         }
         .to_string()
     };
-    let mut score = 0;
+    let mut _score = 0;
     let mut paddle_pos = IVec2::ZERO;
-    let mut ball_pos = IVec2::ZERO;
+    let mut _ball_pos = IVec2::ZERO;
     loop {
         let (pos, val) = get_tile();
         if pos.x == -1 {
-            score = val;
-            println!("Score = {}", score);
+            _score = val;
+            println!("Score = {}", _score);
         } else {
             let tile: Tile = FromPrimitive::from_i64(val).unwrap();
             world.world.insert(pos, tile);
 
             match tile {
                 Tile::Ball => {
-                    ball_pos = pos;
-                    let diff = (ball_pos - paddle_pos).x;
+                    _ball_pos = pos;
+                    let diff = (_ball_pos - paddle_pos).x;
                     if diff == 0 {
                         game_input.send(Some(0));
                     } else if diff > 0 {

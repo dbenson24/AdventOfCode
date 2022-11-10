@@ -83,7 +83,7 @@ impl SolvePuzzle for Year2021Day1 {
 
 #[test]
 pub fn submit_year_2021_day_1() -> Result<()> {
-    let tests = Year2021Day1::run_tests()?;
+    let _tests = Year2021Day1::run_tests()?;
     let res = Year2021Day1::try_submit()?;
     eprintln!("{res:?}");
     Ok(())

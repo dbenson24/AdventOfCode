@@ -218,7 +218,7 @@ impl SolvePuzzle for AoC2022Day1PartA {
         (2022, 1)
     }
 
-    fn solve(input: &str) -> Result<Self::Output> {
+    fn solve(_input: &str) -> Result<Self::Output> {
         Ok("1")
     }
 
@@ -239,7 +239,7 @@ impl SolvePuzzle for AoC2022Day1PartB {
         (2022, 1)
     }
 
-    fn solve(input: &str) -> Result<Self::Output> {
+    fn solve(_input: &str) -> Result<Self::Output> {
         Ok(PuzzleAnswer(Some("1".to_owned()), None))
     }
 }
@@ -251,7 +251,7 @@ impl SolvePuzzle for AoC2022Day2 {
         (2022, 2)
     }
 
-    fn solve(input: &str) -> Result<Self::Output> {
+    fn solve(_input: &str) -> Result<Self::Output> {
         Ok((Some("1".to_owned()), "2".to_owned()))
     }
 }
@@ -263,7 +263,7 @@ impl SolvePuzzle for AoC2022Day3 {
         (2022, 3)
     }
 
-    fn solve(input: &str) -> Result<Self::Output> {
+    fn solve(_input: &str) -> Result<Self::Output> {
         Ok((Some("1".to_owned()), "2".to_owned()))
     }
 }
