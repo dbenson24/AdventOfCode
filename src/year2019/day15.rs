@@ -61,7 +61,7 @@ pub fn day_15() {
     state.min_cost_4(
         &mut (&mut curr_pos, &mut oxygen_start),
         IVec2::ZERO,
-        |next_pos, world, (curr_pos, oxygen_start)| {
+        |next_pos, world, (curr_pos, oxygen_start), _| {
             let res = world.min_path_4(
                 &mut 0,
                 **curr_pos,
@@ -147,7 +147,7 @@ pub fn day_15() {
             world.min_cost_4(
                 &mut 0,
                 IVec2::ZERO,
-                |y, _, _| y == pos,
+                |y, _, _, _| y == pos,
                 |p, w, _| {
                     if let Some(tile) = w.world.get(&p) {
                         if tile == &Tile::Wall {
@@ -167,12 +167,12 @@ pub fn day_15() {
         },
     );
 
-    state.pretty_print(&make_printer(IVec2::ZERO), true);
+    state.pretty_print_custom(&make_printer(IVec2::ZERO), true);
 
     let x = state.min_cost_4(
         &mut 0,
         IVec2::ZERO,
-        |y, _, _| y == oxygen_start,
+        |y, _, _, _| y == oxygen_start,
         |p, w, _| {
             if let Some(tile) = w.world.get(&p) {
                 if tile == &Tile::Wall {

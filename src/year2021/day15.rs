@@ -33,7 +33,7 @@ pub fn ridged_noise() {
 }
 
 pub fn day_15() {
-    if let Some(mut map) = World::<usize>::from_file("./src/year2021/data/day15input.txt", &|s| {
+    if let Some(mut map) = World::<usize>::from_file("./src/year2021/data/day15input.txt", |s| {
         let x: usize = s.parse().unwrap();
         x
     }) {
@@ -163,7 +163,7 @@ pub fn find_path(map: &mut World<usize>, px_per_node: u32) {
     dbg!(map.min_cost_4(
         &mut 0,
         IVec2::ZERO,
-        |x, _, _| x == end,
+        |x, _, _, _| x == end,
         |pos, map, _| {
             if let Some(x) = map.world.get(&pos) {
                 Some(*x)

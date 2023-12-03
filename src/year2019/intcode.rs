@@ -38,7 +38,7 @@ pub struct IntcodeMachine {
 
 impl IntcodeMachine {
     pub fn new(mut numbers: Vec<i64>) -> Self {
-        numbers.resize(numbers.len() + 1000, 0);
+        numbers.resize(numbers.len() + 10000, 0);
         IntcodeMachine {
             numbers,
             last_output: None,
@@ -49,6 +49,15 @@ impl IntcodeMachine {
         let lines = read_lines(path)?;
         for (_line_num, line) in lines.enumerate() {
             let numbers: Vec<i64> = line?.split(",").map(|s| s.parse().unwrap()).collect();
+            return Ok(numbers);
+        }
+
+        Err(Box::new(ParseIntVecErr))
+    }
+
+    pub fn parse_str(input: &str) -> Result<Vec<i64>, Box<dyn error::Error>> {
+        for (_line_num, line) in input.lines().enumerate() {
+            let numbers: Vec<i64> = line.split(",").map(|s| s.parse().unwrap()).collect();
             return Ok(numbers);
         }
 
@@ -80,9 +89,15 @@ impl IntcodeMachine {
         let (tx, game_output) = channel();
         spawn(move || {
             robot.run(&rx, &tx);
-            tx.send(None);
+            // tx.send(None);
         });
         (game_input, game_output)
+    }
+
+    pub fn send_str(channel: &Sender<Option<i64>>, x: &str) {
+        x.bytes()
+            .map(|x| x as i64)
+            .for_each(|x| channel.send(Some(x)).unwrap());
     }
 
     pub fn run(&mut self, input: &Receiver<Option<i64>>, output: &Sender<Option<i64>>) {

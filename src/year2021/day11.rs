@@ -40,7 +40,7 @@ pub fn flash_octopuses(world: &mut World<i32>) -> i32 {
 
 #[test]
 pub fn day_11() {
-    if let Some(mut map) = World::<i32>::from_file("./src/year2021/data/day11input.txt", &|s| {
+    if let Some(mut map) = World::<i32>::from_file("./src/year2021/data/day11input.txt", |s| {
         let x: i32 = s.parse().unwrap();
         x
     }) {

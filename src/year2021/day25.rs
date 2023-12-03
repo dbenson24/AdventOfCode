@@ -10,16 +10,14 @@ pub struct Cucumber {
 
 #[test]
 pub fn day_25() {
-    if let Some(mut map) =
-        World::<Cucumber>::from_file("./src/year2021/data/day25input.txt", &|s| {
-            let cuc = match s {
-                "v" => Some(Cucumber { dir: Dir2::Down }),
-                ">" => Some(Cucumber { dir: Dir2::Right }),
-                _ => None,
-            };
-            cuc
-        })
-    {
+    if let Some(mut map) = World::<Cucumber>::from_file("./src/year2021/data/day25input.txt", |s| {
+        let cuc = match s {
+            "v" => Some(Cucumber { dir: Dir2::Down }),
+            ">" => Some(Cucumber { dir: Dir2::Right }),
+            _ => None,
+        };
+        cuc
+    }) {
         let max_x = map.max_x() + 1;
         let max_y = map.max_y() + 1;
         let mut i = 0;
