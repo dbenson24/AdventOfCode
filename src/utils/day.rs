@@ -21,14 +21,14 @@ impl SolvePuzzle for AoC2023Day1 {
 
     fn test_cases() -> Vec<TestCase> {
         vec![
-            TestCase::new(Part::A, 0, 0),
-            TestCase::new(Part::B, 0, 0),
+            // TestCase::new(Part::A, 0, 0),
+            // TestCase::new(Part::B, 0, 0),
         ]
     }
 }
 
 #[test]
-fn day1() -> Result<()> {
+fn run() -> Result<()> {
     AoC2023Day1::run_tests()?;
     let res = AoC2023Day1::try_submit()?;
     eprintln!("{res:?}");

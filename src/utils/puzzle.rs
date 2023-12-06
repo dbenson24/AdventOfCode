@@ -164,6 +164,7 @@ impl PuzzleInfo {
     pub fn try_submit(&self) -> Result<(bool, bool)> {
         let cookie = read_session_cookie()?;
         let (year, day) = self.id;
+        println!("Submitting year {} day {}", year, day);
         let input = get_input(&cookie, year, day)?;
         let answer = (self.solver)(&input)?;
         let mut state = PuzzleState::load(year, day);
