@@ -4,13 +4,14 @@ use crate::utils::{
 };
 use anyhow::Result;
 use itertools::Itertools;
+use rayon::prelude::*;
 
-pub struct AoC2017Day1;
+pub struct AoC2023Day1;
 
-impl SolvePuzzle for AoC2017Day1 {
+impl SolvePuzzle for AoC2023Day1 {
     type Output = (Option<i32>, Option<i32>);
     fn puzzle_year_day() -> (i32, u32) {
-        (2017, 1)
+        (2023, 1)
     }
 
     fn solve(input: &str) -> Result<Self::Output> {
@@ -28,8 +29,8 @@ impl SolvePuzzle for AoC2017Day1 {
 
 #[test]
 fn day1() -> Result<()> {
-    AoC2017Day1::run_tests()?;
-    let res = AoC2017Day1::try_submit()?;
+    AoC2023Day1::run_tests()?;
+    let res = AoC2023Day1::try_submit()?;
     eprintln!("{res:?}");
     Ok(())
 }
