@@ -18,8 +18,8 @@ fn main() {
     //year2021::day6::calc_fish_buckets(days);
     let now = Instant::now();
 
-    year2023::day5::AoC2023Day5::run_tests().unwrap();
-    let res = year2023::day5::AoC2023Day5::try_submit().unwrap();
+    year2023::day8::AoC2023Day8::run_tests().unwrap();
+    let res = year2023::day8::AoC2023Day8::try_submit().unwrap();
     eprintln!("{res:?}");
     let elapsed = now.elapsed();
     println!("{} ms", elapsed.as_millis());
