@@ -122,9 +122,7 @@ fn get_hand_type(match_counts: &HashMap<usize, usize>) -> HandType {
         HandType::FiveOfAKind
     } else if *match_counts.get(&4).unwrap_or(&0) == 1 {
         HandType::FourOfAKind
-    } else if *match_counts.get(&3).unwrap_or(&0) == 1
-        && *match_counts.get(&2).unwrap_or(&0) == 1
-    {
+    } else if *match_counts.get(&3).unwrap_or(&0) == 1 && *match_counts.get(&2).unwrap_or(&0) == 1 {
         HandType::FullHouse
     } else if *match_counts.get(&3).unwrap_or(&0) == 1 {
         HandType::ThreeOfAKind
@@ -210,16 +208,16 @@ impl HandJ {
             2 => match hand_type {
                 HandType::ThreeOfAKind => HandType::FiveOfAKind,
                 HandType::OnePair => HandType::FourOfAKind,
-                _ => HandType::ThreeOfAKind
-            }
+                _ => HandType::ThreeOfAKind,
+            },
             1 => match hand_type {
                 HandType::FourOfAKind => HandType::FiveOfAKind,
                 HandType::ThreeOfAKind => HandType::FourOfAKind,
                 HandType::TwoPair => HandType::FullHouse,
                 HandType::OnePair => HandType::ThreeOfAKind,
-                _ => HandType::OnePair
-            }
-            _ => hand_type
+                _ => HandType::OnePair,
+            },
+            _ => hand_type,
         };
 
         Self { cards, hand_type }
